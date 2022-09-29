@@ -28,7 +28,7 @@ export function example1(){
 }
 `
 
-const tsTestData3 = `
+const tsTestData3 = `/* eslint-disable */
 export function example3(): void{
   return 'something'
 }

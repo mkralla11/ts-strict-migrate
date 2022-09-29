@@ -50,9 +50,10 @@ describe('runTsStrictMigrate', function(){
       repoPath: `${__dirname}/gitTestData`,
       includeFilesAfterDate: secondTimeStamp
     })
-    debugger
+    
     console.log(res.lintResults.prettyResult)
     expect(res.success).toEqual(false)
+    expect(res.lintResults.lintResult[1].errorCount).toEqual(3)
   })
 })
 
