@@ -35,10 +35,15 @@ export async function runTsStrictMigrate({repoPath, includeStagedFiles=true, inc
 
   const lintResults = await lint(files)
   
-  const success = compile(files, {
+  const success = compile(files, { 
     strict: true,
-    noEmitOnError: true,
     noImplicitAny: true,
+    strictNullChecks: true,
+    noFallthroughCasesInSwitch: true,
+    noPropertyAccessFromIndexSignature: true,
+    forceConsistentCasingInFileNames: true,
+    noImplicitOverride: true,
+    noEmitOnError: true,
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.CommonJS
   });

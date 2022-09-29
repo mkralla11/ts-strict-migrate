@@ -17,7 +17,9 @@ export async function lint(filePaths: string[]): Promise<ILintResult>{
       parser: '@typescript-eslint/parser',
       plugins: ['@typescript-eslint'],
       "rules": {
-        "eslint-comments/no-use": ["error", {"allow": []}]
+        "eslint-comments/no-use": ["error", {"allow": []}],
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/explicit-module-boundary-types": "error"
       }
     }
   });

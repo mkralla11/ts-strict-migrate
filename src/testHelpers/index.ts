@@ -23,13 +23,13 @@ export function example(){
 `
 
 const tsTestData1 = `
-export function example1(){
+export function example1(): any{
     return 'something'
 }
 `
 
 const tsTestData3 = `/* eslint-disable */
-export function example3(): void{
+export function example3(): void {
   return 'something'
 }
 
