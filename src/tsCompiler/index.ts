@@ -35,7 +35,7 @@ export function compile(fileNames: string[], options: ts.CompilerOptions): boole
       output.push(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
     }
   });
-  console.log(output.join("\n"));
+  console.log(output.join('\n'));
   // console.log(emitResult)
   // let exitCode = emitResult.emitSkipped ? 1 : 0;
   // console.log(`Process exiting with code '${exitCode}'.`);
