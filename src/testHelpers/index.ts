@@ -1,4 +1,4 @@
-import { simpleGit, SimpleGit, SimpleGitOptions } from 'simple-git';
+import { simpleGit, SimpleGit } from 'simple-git';
 import {
   ensureDir, ensureFile, writeFile, remove,
 } from 'fs-extra';
@@ -8,7 +8,6 @@ import { promisify } from 'util';
 const asyncExec = promisify(exec);
 
 const testGitDir = `${__dirname}/../gitTestData`;
-const testGitHiddenGitFolder = `${testGitDir}/.git`;
 const tsTestFile = `${testGitDir}/example.ts`;
 // used to test staged file
 export const test1fFileName = 'example1.ts';
@@ -75,7 +74,7 @@ export function example1(){
 }
 `;
 function delay(ms: number): Promise<void> {
-  return new Promise((res, rej) => {
+  return new Promise((res) => {
     setTimeout(() => res(), ms);
   });
 }
@@ -112,17 +111,17 @@ export async function ensureTestGitRepoExists(): Promise<SimpleGit> {
   return git;
 }
 
-export async function gitAddAllTestFiles() {
+export async function gitAddAllTestFiles(): Promise<void> {
   const git: SimpleGit = simpleGit(testGitDir, { binary: 'git' });
   await git.add('.');
 }
 
-export async function gitCommitAllTestFiles() {
+export async function gitCommitAllTestFiles(): Promise<void> {
   const git: SimpleGit = simpleGit(testGitDir, { binary: 'git' });
   await git.commit('commit rest of files');
 }
 
-export async function removeTestRepo() {
+export async function removeTestRepo(): Promise<void> {
   await asyncExec(`rm -rf ${testGitDir}`);
 }
 
@@ -134,7 +133,10 @@ export interface ITmToFiles {
   [key: string]: string[]
 }
 
-export async function getCommittedTimestampsToFilesForBranch(branchName: string, git: SimpleGit): Promise<ITmToFiles> {
+export async function getCommittedTimestampsToFilesForBranch(
+  branchName: string,
+  git: SimpleGit,
+): Promise<ITmToFiles> {
   const arr: string[] = (await git.raw(['log', branchName, '--pretty=~~~%ct', '--name-only'])).split('\n').filter((x) => !!x);
   let curTm = '';
   return arr.reduce((acc: ITmToFiles, v: string): ITmToFiles => {
