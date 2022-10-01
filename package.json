@@ -12,7 +12,6 @@
     "lint:fix": "eslint src --fix",
     "lint": "eslint src",
     "build": "tsc",
-    "build:ci": "npm uninstall -g tsc && npx --package typescript tsc",
     "test": "jest",
     "test:watch": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --watch",
     "prepare": "husky install"
@@ -46,7 +45,6 @@
     "react-native": "^0.70.1",
     "ts-jest": "^29.0.2",
     "ts-node": "^10.9.1",
-    "tsc": "^2.0.4",
     "typescript": "^4.8.4"
   },
   "dependencies": {

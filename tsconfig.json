@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowJs":false,
     "strict": true,
     "declaration": true,
     "declarationMap": true,
@@ -17,6 +18,7 @@
     "src"
   ],
   "exclude": [
-    "src/gitTestData"
+    "src/gitTestData",
+    "dist"
   ]
 }
