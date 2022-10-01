@@ -1,6 +1,5 @@
-import {runTsStrictMigrate} from './runTsStrictMigrate'
-
+import { runTsStrictMigrate } from './runTsStrictMigrate';
 
 export {
-    runTsStrictMigrate
-}
+  runTsStrictMigrate,
+};

@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "airbnb",
+    "plugin:eslint-comments/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "eslint-comments/no-use": ["error", {"allow": []}],
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/explicit-module-boundary-types": "error",
+    "no-unused-vars": "off"
+  },
+  "ignorePatterns": ["node_modules", "dist"]
+}
