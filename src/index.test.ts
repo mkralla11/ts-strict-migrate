@@ -41,6 +41,7 @@ describe('runTsStrictMigrate', () => {
   });
 
   it('should execute runTsStrictMigrate on all staged and new committed files after date', async () => {
+    jest.setTimeout(10000);
     await gitAddAllTestFiles();
     const secondTimeStamp = Object.keys(committedTimestampsToFiles)[1];
     const res = await runTsStrictMigrate({
