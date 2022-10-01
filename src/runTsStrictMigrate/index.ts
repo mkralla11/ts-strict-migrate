@@ -69,10 +69,8 @@ ${file}
       `);
       process.exit(1);
     }
-    return file
-  }).filter((file)=>{
-    return /^.+\\.(ts|tsx|cts|mts)$/.test(file)
-  });
+    return file;
+  }).filter((file) => /^.+\\.(ts|tsx|cts|mts)$/.test(file));
 
   const files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
 
