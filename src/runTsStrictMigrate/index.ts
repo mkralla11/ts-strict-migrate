@@ -61,7 +61,7 @@ export async function runTsStrictMigrate(
     allNewFiles = allNewFiles.concat(newFilesAfterDate);
   }
 
-  allNewFiles.map((file) => {
+  allNewFiles = allNewFiles.map((file) => {
     if (file.slice(-3) === '.js' || file.slice(-4) === '.jsx') {
       console.error(`
 Please use .ts(x) extension instead of .js(x)
@@ -70,7 +70,7 @@ ${file}
       process.exit(1);
     }
     return file;
-  }).filter((file) => /^.+\\.(ts|tsx|cts|mts)$/.test(file));
+  }).filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file));
 
   const files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
 
@@ -92,6 +92,8 @@ ${file}
     module: ts.ModuleKind.CommonJS,
     allowJs: false,
   });
+
+  await git.add(allNewFiles)
 
   return {
     strictFiles: allNewFiles,
