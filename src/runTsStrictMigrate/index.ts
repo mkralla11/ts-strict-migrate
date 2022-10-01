@@ -89,7 +89,7 @@ ${file}
     jsx: 4,
     target: ts.ScriptTarget.ES5,
     module: ts.ModuleKind.CommonJS,
-    allowJs:false
+    allowJs: false,
   });
 
   return {
