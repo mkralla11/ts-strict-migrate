@@ -40,8 +40,6 @@ interface IRunTsStrictMigrateResult {
   success: boolean
 }
 
-// type jsx: JsxEmit = 'react';
-
 export async function runTsStrictMigrate(
   {
     repoPath,
