@@ -25,4 +25,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run lint
+      - run: |
+        git config --global user.email "mike.mkrallaproductions@gmail.com"
+        git config --global user.name "Mike Khirallah"
       - run: npm run test
