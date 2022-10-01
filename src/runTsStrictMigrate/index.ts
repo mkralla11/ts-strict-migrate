@@ -61,7 +61,7 @@ export async function runTsStrictMigrate(
     allNewFiles = allNewFiles.concat(newFilesAfterDate);
   }
 
-  allNewFiles.forEach((file) => {
+  allNewFiles.map((file) => {
     if (file.slice(-3) === '.js' || file.slice(-4) === '.jsx') {
       console.error(`
 Please use .ts(x) extension instead of .js(x)
@@ -69,6 +69,9 @@ ${file}
       `);
       process.exit(1);
     }
+    return file
+  }).filter((file)=>{
+    return /^.+\\.(ts|tsx|cts|mts)$/.test(file)
   });
 
   const files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
