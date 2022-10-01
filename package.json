@@ -11,7 +11,8 @@
     "lint:watch": "nodemon --watch 'src/**/*' --ext '*' --ignore 'src/gitTestData' --exec 'eslint src --fix'",
     "lint:fix": "eslint src --fix",
     "lint": "eslint src",
-    "build": "./node_modules/.bin/tsc",
+    "build": "tsc",
+    "build:ci": "npm uninstall -g tsc && npx --package typescript tsc",
     "test": "jest",
     "test:watch": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --watch",
     "prepare": "husky install"
