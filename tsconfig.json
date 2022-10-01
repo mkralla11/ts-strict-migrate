@@ -1,19 +1,22 @@
 {
-    "compilerOptions": {
-      "strict": true,
-      "declaration": true,
-      "declarationMap": true,
-      "forceConsistentCasingInFileNames": true,
-      "skipLibCheck": true,
-      "sourceMap": true,
-      "esModuleInterop": true,
-      "module": "commonjs",
-      "target": "ES2016",
-      "declaration": true,
-      "outDir": "./dist",
-      "rootDir": "./src"
-    },
-    "include": [
-      "src"
-    ]
-  }
+  "compilerOptions": {
+    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "target": "ES2016",
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/gitTestData"
+  ]
+}
