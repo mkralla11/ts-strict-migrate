@@ -28,7 +28,7 @@
   "homepage": "https://github.com/mkralla11/ts-strict-migrate#readme",
   "devDependencies": {
     "@types/eslint": "^8.4.6",
-    "@types/jest": "^29.0.3",
+    "@types/jest": "^29.1.1",
     "eslint": "^8.24.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.26.0",
@@ -39,7 +39,7 @@
     "eslint-plugin-react-native": "^4.0.0",
     "fs-extra": "^10.1.0",
     "husky": "^8.0.1",
-    "jest": "^29.0.3",
+    "jest": "^29.1.2",
     "nodemon": "^2.0.20",
     "react": "^18.1.0",
     "react-native": "^0.70.1",
