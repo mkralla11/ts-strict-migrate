@@ -66,7 +66,7 @@ export async function runTsStrictMigrate(
 
   let sucess = true;
   allNewFiles.forEach((file) => {
-    if (file.slice(-3) === '.js' || file.slice(-4) === '.jsx') {
+    if ((file.slice(-3) === '.js' || file.slice(-4) === '.jsx') && !/^node_modules\/.+$/.test(file)) {
       console.error(`
 Please use .ts(x) extension instead of .js(x)
 ${file}
