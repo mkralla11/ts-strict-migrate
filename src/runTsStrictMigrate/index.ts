@@ -93,7 +93,7 @@ ${file}
     allowJs: false,
   });
 
-  await git.add(allNewFiles);
+  // await git.add(allNewFiles);
 
   return {
     strictFiles: allNewFiles,
