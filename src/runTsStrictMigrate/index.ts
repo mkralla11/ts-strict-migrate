@@ -80,7 +80,7 @@ ${file}
     };
   }
 
-  allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file));
+  allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file) && !/^node_modules\/.+$/.test(file));
 
   const files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
 
