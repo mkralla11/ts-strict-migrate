@@ -12,6 +12,8 @@ import {
 } from './testHelpers';
 
 describe('runTsStrictMigrate', () => {
+  jest.setTimeout(10000);
+  
   let git: SimpleGit;
   let committedTimestampsToFiles: ITmToFiles;
   beforeEach(async () => {
@@ -41,7 +43,6 @@ describe('runTsStrictMigrate', () => {
   });
 
   it('should execute runTsStrictMigrate on all staged and new committed files after date', async () => {
-    jest.setTimeout(10000);
     await gitAddAllTestFiles();
     const secondTimeStamp = Object.keys(committedTimestampsToFiles)[1];
     const res = await runTsStrictMigrate({
