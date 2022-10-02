@@ -35,8 +35,10 @@ interface IRunTsStrictMigrate {
 }
 
 interface IRunTsStrictMigrateResult {
-  lintResults: ILintResult,
-  strictFiles: string[],
+  lintResults?: ILintResult,
+  strictFiles?: string[],
+  lintSuccess?: boolean,
+  tsSuccess?: boolean,
   success: boolean
 }
 
@@ -61,22 +63,33 @@ export async function runTsStrictMigrate(
     allNewFiles = allNewFiles.concat(newFilesAfterDate);
   }
 
-  allNewFiles = allNewFiles.map((file) => {
+  let sucess = true;
+  allNewFiles.forEach((file) => {
     if (file.slice(-3) === '.js' || file.slice(-4) === '.jsx') {
       console.error(`
 Please use .ts(x) extension instead of .js(x)
 ${file}
       `);
-      process.exit(1);
+      sucess = false;
     }
-    return file;
-  }).filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file));
+  });
+  if (!sucess) {
+    return {
+      success: false,
+    };
+  }
+
+  allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file));
 
   const files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
 
   const lintResults = await lint(files);
 
-  const success = compile(files, {
+  const lintSuccess = !lintResults?.lintResult?.find(
+    ({ errorCount }: {errorCount: number}) => errorCount > 0,
+  );
+
+  const tsSuccess = compile(files, {
     strict: true,
     noImplicitAny: true,
     strictNullChecks: true,
@@ -98,7 +111,9 @@ ${file}
   return {
     strictFiles: allNewFiles,
     lintResults,
-    success,
+    lintSuccess,
+    tsSuccess,
+    success: lintSuccess && tsSuccess,
   };
 }
 

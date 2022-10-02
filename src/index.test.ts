@@ -50,9 +50,11 @@ describe('runTsStrictMigrate', () => {
       includeFilesAfterDate: secondTimeStamp,
     });
 
-    console.log(res.lintResults.prettyResult);
+    console.log(res?.lintResults?.prettyResult);
     expect(res.success).toEqual(false);
-    expect(res.lintResults.lintResult[0].errorCount).toEqual(2);
-    expect(res.lintResults.lintResult[1].errorCount).toEqual(3);
+    expect(res.lintSuccess).toEqual(false);
+    expect(res.tsSuccess).toEqual(false);
+    expect(res?.lintResults?.lintResult?.[0]?.errorCount).toEqual(2);
+    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(3);
   });
 });
