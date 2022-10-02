@@ -49,7 +49,8 @@ describe('runTsStrictMigrate', () => {
       repoPath: `${__dirname}/gitTestData`,
       includeFilesAfterDate: secondTimeStamp,
     });
-
+    
+    console.log(res?.tsResults?.prettyResult);
     console.log(res?.lintResults?.prettyResult);
     expect(res.success).toEqual(false);
     expect(res.lintSuccess).toEqual(false);

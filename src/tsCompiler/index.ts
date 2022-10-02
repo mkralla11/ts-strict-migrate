@@ -7,7 +7,12 @@ interface IcreatedFiles {
   [key: string]: string
 }
 
-export function compile(fileNames: string[], options: ts.CompilerOptions): boolean {
+export interface ICompileResult {
+  prettyResult: string,
+  success: boolean
+}
+
+export function compile(fileNames: string[], options: ts.CompilerOptions): ICompileResult {
   // Create a Program with an in-memory emit
   const createdFiles: IcreatedFiles = {};
   const host = ts.createCompilerHost(options);
@@ -35,11 +40,14 @@ export function compile(fileNames: string[], options: ts.CompilerOptions): boole
       output.push(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
     }
   });
-  console.log(output.join('\n'));
+  // console.log(output.join('\n'));
   // console.log(emitResult)
   // let exitCode = emitResult.emitSkipped ? 1 : 0;
   // console.log(`Process exiting with code '${exitCode}'.`);
 
   // process.exit(exitCode);
-  return !emitResult.emitSkipped;
+  return {
+    prettyResult: output.join('\n'),
+    success: !emitResult.emitSkipped,
+  };
 }

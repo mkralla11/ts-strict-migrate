@@ -1,7 +1,7 @@
 import { simpleGit, SimpleGit } from 'simple-git';
 // import { JsxEmit } from 'typescript';
 import * as ts from 'typescript';
-import { compile } from '../tsCompiler';
+import { compile, ICompileResult } from '../tsCompiler';
 import { lint, ILintResult } from '../linter';
 
 export async function getStagedNewFiles(git: SimpleGit): Promise<string[]> {
@@ -36,6 +36,7 @@ interface IRunTsStrictMigrate {
 
 interface IRunTsStrictMigrateResult {
   lintResults?: ILintResult,
+  tsResults?: ICompileResult,
   strictFiles?: string[],
   lintSuccess?: boolean,
   tsSuccess?: boolean,
@@ -89,7 +90,7 @@ ${file}
     ({ errorCount }: {errorCount: number}) => errorCount > 0,
   );
 
-  const tsSuccess = compile(files, {
+  const tsResults = compile(files, {
     strict: true,
     noImplicitAny: true,
     strictNullChecks: true,
@@ -106,11 +107,14 @@ ${file}
     allowJs: false,
   });
 
+  const { success: tsSuccess } = tsResults;
+
   await git.add(allNewFiles);
 
   return {
     strictFiles: allNewFiles,
     lintResults,
+    tsResults,
     lintSuccess,
     tsSuccess,
     success: lintSuccess && tsSuccess,
