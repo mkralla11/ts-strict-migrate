@@ -799,12 +799,6 @@
     "@types/node" "*"
     jest-mock "^29.1.2"
 
-"@jest/expect-utils@^29.0.3":
-  version "29.0.3"
-  resolved "https://registry.npmjs.org/@jest/expect-utils/-/expect-utils-29.0.3.tgz"
-  dependencies:
-    jest-get-type "^29.0.0"
-
 "@jest/expect-utils@^29.1.2":
   version "29.1.2"
   resolved "https://registry.yarnpkg.com/@jest/expect-utils/-/expect-utils-29.1.2.tgz#66dbb514d38f7d21456bc774419c9ae5cca3f88d"
@@ -1314,8 +1308,8 @@
     "@types/istanbul-lib-report" "*"
 
 "@types/jest@^29.0.3":
-  version "29.0.3"
-  resolved "https://registry.npmjs.org/@types/jest/-/jest-29.0.3.tgz"
+  version "29.1.2"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.1.2.tgz#7ad8077043ab5f6c108c8111bcc1d224e5600a87"
   dependencies:
     expect "^29.0.0"
     pretty-format "^29.0.0"
@@ -2788,17 +2782,7 @@ expand-brackets@^2.1.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
-expect@^29.0.0:
-  version "29.0.3"
-  resolved "https://registry.npmjs.org/expect/-/expect-29.0.3.tgz"
-  dependencies:
-    "@jest/expect-utils" "^29.0.3"
-    jest-get-type "^29.0.0"
-    jest-matcher-utils "^29.0.3"
-    jest-message-util "^29.0.3"
-    jest-util "^29.0.3"
-
-expect@^29.1.2:
+expect@^29.0.0, expect@^29.1.2:
   version "29.1.2"
   resolved "https://registry.yarnpkg.com/expect/-/expect-29.1.2.tgz#82f8f28d7d408c7c68da3a386a490ee683e1eced"
   dependencies:
@@ -3679,15 +3663,6 @@ jest-config@^29.1.2:
     slash "^3.0.0"
     strip-json-comments "^3.1.1"
 
-jest-diff@^29.0.3:
-  version "29.0.3"
-  resolved "https://registry.npmjs.org/jest-diff/-/jest-diff-29.0.3.tgz"
-  dependencies:
-    chalk "^4.0.0"
-    diff-sequences "^29.0.0"
-    jest-get-type "^29.0.0"
-    pretty-format "^29.0.3"
-
 jest-diff@^29.1.2:
   version "29.1.2"
   resolved "https://registry.yarnpkg.com/jest-diff/-/jest-diff-29.1.2.tgz#bb7aaf5353227d6f4f96c5e7e8713ce576a607dc"
@@ -3757,15 +3732,6 @@ jest-leak-detector@^29.1.2:
     jest-get-type "^29.0.0"
     pretty-format "^29.1.2"
 
-jest-matcher-utils@^29.0.3:
-  version "29.0.3"
-  resolved "https://registry.npmjs.org/jest-matcher-utils/-/jest-matcher-utils-29.0.3.tgz"
-  dependencies:
-    chalk "^4.0.0"
-    jest-diff "^29.0.3"
-    jest-get-type "^29.0.0"
-    pretty-format "^29.0.3"
-
 jest-matcher-utils@^29.1.2:
   version "29.1.2"
   resolved "https://registry.yarnpkg.com/jest-matcher-utils/-/jest-matcher-utils-29.1.2.tgz#e68c4bcc0266e70aa1a5c13fb7b8cd4695e318a1"
@@ -3774,20 +3740,6 @@ jest-matcher-utils@^29.1.2:
     jest-diff "^29.1.2"
     jest-get-type "^29.0.0"
     pretty-format "^29.1.2"
-
-jest-message-util@^29.0.3:
-  version "29.0.3"
-  resolved "https://registry.npmjs.org/jest-message-util/-/jest-message-util-29.0.3.tgz"
-  dependencies:
-    "@babel/code-frame" "^7.12.13"
-    "@jest/types" "^29.0.3"
-    "@types/stack-utils" "^2.0.0"
-    chalk "^4.0.0"
-    graceful-fs "^4.2.9"
-    micromatch "^4.0.4"
-    pretty-format "^29.0.3"
-    slash "^3.0.0"
-    stack-utils "^2.0.3"
 
 jest-message-util@^29.1.2:
   version "29.1.2"
@@ -3944,7 +3896,7 @@ jest-util@^27.2.0:
     graceful-fs "^4.2.9"
     picomatch "^2.2.3"
 
-jest-util@^29.0.0, jest-util@^29.0.3:
+jest-util@^29.0.0:
   version "29.0.3"
   resolved "https://registry.npmjs.org/jest-util/-/jest-util-29.0.3.tgz"
   dependencies:
@@ -5142,7 +5094,7 @@ pretty-format@^26.5.2, pretty-format@^26.6.2:
     ansi-styles "^4.0.0"
     react-is "^17.0.1"
 
-pretty-format@^29.0.0, pretty-format@^29.0.3, pretty-format@^29.1.2:
+pretty-format@^29.0.0, pretty-format@^29.1.2:
   version "29.1.2"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-29.1.2.tgz#b1f6b75be7d699be1a051f5da36e8ae9e76a8e6a"
   dependencies:
