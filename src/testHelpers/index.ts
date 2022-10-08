@@ -8,7 +8,7 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 
 const asyncExec = promisify(exec);
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+// const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 type Resolve<T> = (value: T | PromiseLike<T>)=>void
 type Reject = (error: Error)=>void

@@ -18,7 +18,8 @@
     "import/extensions": "off",
     "import/no-extraneous-dependencies": "off",
     "import/prefer-default-export": "off",
-    "unicorn/no-array-reduce": "off"
+    "unicorn/no-array-reduce": "off",
+    "unicorn/prefer-module": "off"
   },
   "ignorePatterns": ["node_modules", "dist", "**/*.test.ts", "src/gitTestData"]
 }
