@@ -1,5 +1,4 @@
 import { SimpleGit } from 'simple-git';
-import { runTsStrictMigrate } from './index';
 import { 
   getFilesAfterDateForBranch, 
   getStagedNewFiles, 
