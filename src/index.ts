@@ -1,5 +1,5 @@
-import { runTsStrictMigrate } from './runTsStrictMigrate';
 
-export {
-  runTsStrictMigrate,
-};
+
+
+
+export {runTsStrictMigrate, IRunTsStrictMigrateResult} from './runTsStrictMigrate';

@@ -2,21 +2,60 @@ import { simpleGit, SimpleGit } from 'simple-git';
 import {
   ensureDir, ensureFile, writeFile, remove,
 } from 'fs-extra';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
 
 const asyncExec = promisify(exec);
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const testGitDir = `${__dirname}/../gitTestData`;
-const tsTestFile = `${testGitDir}/example.ts`;
+type Resolve<T> = (value: T | PromiseLike<T>)=>void
+type Reject = (error: Error)=>void
+
+interface ExposedPromise<T> {
+  resolve: Resolve<T>,
+  reject: Reject,
+  promise: Promise<T>
+}
+
+export function createExposedPromise<T>(): ExposedPromise<T> {
+  const resolve: Resolve<T> = (value) => {
+    resolver(value);
+  };
+
+  const reject = (error: Error) => {
+    rejecter(error);
+  };
+  let resolver: Resolve<T>;
+  let rejecter: Reject;
+
+  const promise = new Promise<T>((promResolve: Resolve<T>, rej: Reject) => {
+    resolver = promResolve;
+    rejecter = rej;
+  });
+  return {
+    resolve,
+    reject,
+    promise,
+  };
+}
+
+const testGitDirectory = `${__dirname}/../gitTestData`;
+const tsTestFile = `${testGitDirectory}/example.ts`;
 // used to test staged file
-export const test1fFileName = 'example1.ts';
-export const tsTestFile1 = `${testGitDir}/${test1fFileName}`;
-const tsTestFile1Delete = `${testGitDir}/exampleDel.ts`;
+export const testFileName1 = 'example1.ts';
+export const tsTestFile1 = `${testGitDirectory}/${testFileName1}`;
+const tsTestFile1Delete = `${testGitDirectory}/exampleDel.ts`;
 
-const tsTestFile2 = `${testGitDir}/example2.ts`;
-const tsTestFile3 = `${testGitDir}/example3.ts`;
-const tsTestFile4 = `${testGitDir}/nested/example4.tsx`;
+const tsTestFile2 = `${testGitDirectory}/example2.js`;
+const tsTestFileDeclaration2 = `${testGitDirectory}/example2.d.ts`;
+
+export const tsTestFilename3 = 'example3.ts';
+export const tsTestFilename4 = 'nested/example4.tsx';
+
+export const tsTestFile3 = `${testGitDirectory}/${tsTestFilename3}`;
+export const tsTestFile4 = `${testGitDirectory}/${tsTestFilename4}`;
 
 const testBranchName = 'testbranch';
 
@@ -27,9 +66,21 @@ export function example(){
 `;
 
 const tsTestData1 = `
-export function example1(): any{
+import {MyComponent} from 'root/nested/example4'
+export function example1(){
     return 'something'
 }
+`;
+
+const tsTestDataDeclaration2 = `
+export function unused(): void
+`;
+const tsTestData2 = `
+  // this a JS file 
+  // this is not included in files pulled in test run
+  export function unused(){
+    return 'a string instead'
+  }
 `;
 
 const tsTestData3 = `/* eslint-disable */
@@ -46,11 +97,14 @@ useTheExample()
 const tsTestData4 = `
 import React, {useState, useEffect} from 'react'
 import {View, Text} from 'react-native'
-
+import {example3} from 'root/example3'
+import {example1} from 'root/example1'
+import {unused} from 'root/example2'
 
 export function MyComponent({text}) {
   const [otherText, setOtherText] = useState("wow")
-  
+  const supposedlyVoid: string = unused()
+
   useEffect(()=>{
     if (true) {
       setOtherText(!otherText)
@@ -73,21 +127,24 @@ export function example1(){
     return 'other'
 }
 `;
-function delay(ms: number): Promise<void> {
-  return new Promise((res) => {
-    setTimeout(() => res(), ms);
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), ms);
   });
 }
 
 export async function ensureTestGitRepoExists(): Promise<SimpleGit> {
-  await ensureDir(testGitDir);
-  const git: SimpleGit = simpleGit(testGitDir, { binary: 'git' });
+  await ensureDir(testGitDirectory);
+  const git: SimpleGit = simpleGit(testGitDirectory, { binary: 'git' });
   await git.init();
   await git.checkoutLocalBranch('master');
   await ensureFile(tsTestFile2);
+  await writeFile(tsTestFile2, tsTestData2);
+  await ensureFile(tsTestFileDeclaration2);
+  await writeFile(tsTestFileDeclaration2, tsTestDataDeclaration2);
   await git.add('.');
   await git.commit('commit master 1 file');
-  await delay(1000);
+  await delay(800);
   await git.checkoutLocalBranch(testBranchName);
   await ensureFile(tsTestFile3);
   await writeFile(tsTestFile3, tsTestData3);
@@ -112,21 +169,22 @@ export async function ensureTestGitRepoExists(): Promise<SimpleGit> {
 }
 
 export async function gitAddAllTestFiles(): Promise<void> {
-  const git: SimpleGit = simpleGit(testGitDir, { binary: 'git' });
+  const git: SimpleGit = simpleGit(testGitDirectory, { binary: 'git' });
   await git.add('.');
 }
 
 export async function gitCommitAllTestFiles(): Promise<void> {
-  const git: SimpleGit = simpleGit(testGitDir, { binary: 'git' });
+  const git: SimpleGit = simpleGit(testGitDirectory, { binary: 'git' });
   await git.commit('commit rest of files');
 }
 
 export async function removeTestRepo(): Promise<void> {
-  await asyncExec(`rm -rf ${testGitDir}`);
+  await asyncExec(`rm -rf ${testGitDirectory}`);
 }
 
 export async function getTestBranchCommits(git: SimpleGit): Promise<string[]> {
-  return (await git.raw(['log', testBranchName, '--pretty=format:%h'])).split('\n');
+  const string_ = await git.raw(['log', testBranchName, '--pretty=format:%h']);
+  return string_.split('\n')
 }
 
 export interface ITmToFiles {
@@ -137,16 +195,17 @@ export async function getCommittedTimestampsToFilesForBranch(
   branchName: string,
   git: SimpleGit,
 ): Promise<ITmToFiles> {
-  const arr: string[] = (await git.raw(['log', branchName, '--pretty=~~~%ct', '--name-only'])).split('\n').filter((x) => !!x);
-  let curTm = '';
-  return arr.reduce((acc: ITmToFiles, v: string): ITmToFiles => {
+  const string_: string = await git.raw(['log', branchName, '--pretty=~~~%ct', '--name-only']);
+  const array: string[] = string_.split('\n').filter((x) => !!x);
+  let currentTm = '';
+  return array.reduce((accumulator: ITmToFiles, v: string): ITmToFiles => {
     if (v.slice(0, 3) === '~~~') {
       const tm = v.slice(3);
-      curTm = tm;
+      currentTm = tm;
     } else {
-      acc[curTm] = acc[curTm] || [];
-      acc[curTm].push(v);
+      accumulator[currentTm] = accumulator[currentTm] || [];
+      accumulator[currentTm].push(v);
     }
-    return acc;
+    return accumulator;
   }, {});
 }

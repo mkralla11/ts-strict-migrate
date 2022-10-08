@@ -1,7 +1,10 @@
 {
+  "env": {
+      "node": true
+  },
   "extends": [
+    "plugin:unicorn/recommended",
     "plugin:@typescript-eslint/recommended",
-    "airbnb",
     "plugin:eslint-comments/recommended"
   ],
   "parser": "@typescript-eslint/parser",
@@ -14,7 +17,8 @@
     "import/no-unresolved": "off",
     "import/extensions": "off",
     "import/no-extraneous-dependencies": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "unicorn/no-array-reduce": "off"
   },
   "ignorePatterns": ["node_modules", "dist", "**/*.test.ts", "src/gitTestData"]
 }
