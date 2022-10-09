@@ -52,13 +52,13 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
   const composedOptions: ts.CompilerOptions = { ...options, ...forceCompilerOptions };
 
   // Create a Program with an in-memory emit
-  const createdFiles: IcreatedFiles = {};
+  // const createdFiles: IcreatedFiles = {};
   let program: ts.Program;
-  let host: ts.FormatDiagnosticsHost;
+  // let host: ts.FormatDiagnosticsHost;
 
   function createProgram(fileNames: string[]): ts.Program {
     const host = ts.createCompilerHost(composedOptions);
-    host.writeFile = (fileName: string, contents: string) => {
+    host.writeFile = (/*fileName: string, contents: string*/) => {
       // createdFiles[fileName] = contents;
     };
     program = ts.createProgram(fileNames, composedOptions, host);

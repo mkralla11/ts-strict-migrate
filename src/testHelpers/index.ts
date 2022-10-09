@@ -4,8 +4,8 @@ import {
 } from 'fs-extra';
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
-import {fileURLToPath} from 'node:url';
-import path from 'node:path';
+// import {fileURLToPath} from 'node:url';
+// import path from 'node:path';
 
 const asyncExec = promisify(exec);
 // const __dirname = path.dirname(fileURLToPath(import.meta.url))
