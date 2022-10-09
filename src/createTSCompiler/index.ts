@@ -19,6 +19,7 @@ interface IcreatedFiles {
 
 export interface ICompileResult {
   prettyResult: string,
+  // rawResult: string,
   success: boolean
 }
 
@@ -53,11 +54,12 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
   // Create a Program with an in-memory emit
   const createdFiles: IcreatedFiles = {};
   let program: ts.Program;
+  let host: ts.FormatDiagnosticsHost;
 
   function createProgram(fileNames: string[]): ts.Program {
     const host = ts.createCompilerHost(composedOptions);
     host.writeFile = (fileName: string, contents: string) => {
-      createdFiles[fileName] = contents;
+      // createdFiles[fileName] = contents;
     };
     program = ts.createProgram(fileNames, composedOptions, host);
     return program;
@@ -74,19 +76,25 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
       .getPreEmitDiagnostics(program);
       // .concat(emitResult.diagnostics);
 
-    const output: string[] = [];
-    for (const diagnostic of allDiagnostics) {
-      if (diagnostic.file) {
-        const { line, character } = ts.getLineAndCharacterOfPosition(
-          diagnostic.file,
-          diagnostic.start ?? 0,
-        );
-        const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
-        output.push(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
-      } else {
-        output.push(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
-      }
-    }
+    // const rawResult: string[] = [];
+    const prettyResult = ts.formatDiagnosticsWithColorAndContext(allDiagnostics, {
+      getCurrentDirectory: () => '',
+      getCanonicalFileName: fileName => fileName,
+      getNewLine: () => '\n\n',
+    })
+
+    // for (const diagnostic of allDiagnostics) {
+    //   if (diagnostic.file) {
+    //     const { line, character } = ts.getLineAndCharacterOfPosition(
+    //       diagnostic.file,
+    //       diagnostic.start ?? 0,
+    //     );
+    //     const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
+    //     rawResult.push(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
+    //   } else {
+    //     rawResult.push(ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n'));
+    //   }
+    // }
     // console.log(output.join('\n'));
     // console.log(emitResult)
     // let exitCode = emitResult.emitSkipped ? 1 : 0;
@@ -94,7 +102,8 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
 
     // process.exit(exitCode);
     return {
-      prettyResult: output.join('\n'),
+      // rawResult: rawResult.join('\n'),
+      prettyResult: prettyResult,
       success: !emitResult.emitSkipped,
     };
   }
