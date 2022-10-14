@@ -48,7 +48,7 @@ export const testFileName1 = 'example1.ts';
 export const tsTestFile1 = `${testGitDirectory}/${testFileName1}`;
 const tsTestFile1Delete = `${testGitDirectory}/exampleDel.ts`;
 
-const tsTestFile2 = `${testGitDirectory}/example2.js`;
+export const tsTestFile2 = `${testGitDirectory}/example2.js`;
 const tsTestFileDeclaration2 = `${testGitDirectory}/example2.d.ts`;
 
 export const tsTestFilename3 = 'example3.ts';

@@ -2,6 +2,7 @@ import { SimpleGit } from 'simple-git';
 import { 
   getFilesAfterDateForBranch, 
   getStagedNewFiles, 
+  getUnstagedAndStagedChangedFilesAfterDate,
   createTsStrictLintMigrate,
   getFilesInCommitsNotOnMasterFor,
   IRunTsStrictMigrateResult
@@ -17,6 +18,7 @@ import {
   tsTestFilename3,
   tsTestFilename4,
   tsTestFile4,
+  tsTestFile2,
   delay,
   createExposedPromise
 } from './testHelpers';
@@ -44,6 +46,21 @@ describe('runTsStrictMigrate', () => {
     expect(files).toContain(testFileName1);
   });
 
+  it('should get unstaged/staged changed files after date', async () => {
+    const timeStamp = Object.keys(committedTimestampsToFiles)[1];
+    const newData4 = `
+      console.log('new stuff')
+    `  
+    await writeFile(tsTestFile4, newData4);
+    const newData2 = `
+      console.log('SHOULD NOT BE CHECKED - NEW FILE ADDED BEFORE DATE.')
+    `  
+    await writeFile(tsTestFile2, newData2);
+
+    const files = await getUnstagedAndStagedChangedFilesAfterDate('testbranch', timeStamp, git);
+    expect(files).toEqual([tsTestFilename4, testFileName1]);
+  });
+
   it('should get all files in commits not in master', async () => {
     const files = await getFilesInCommitsNotOnMasterFor('testbranch', git);
     expect(files).toEqual([tsTestFilename3, tsTestFilename4])
@@ -51,7 +68,6 @@ describe('runTsStrictMigrate', () => {
 
   it('should get new files commited after date', async () => {
     const secondTimeStamp = Object.keys(committedTimestampsToFiles)[1];
-    // console.log('since', secondTimeStamp)
     const filesAfterDate = await getFilesAfterDateForBranch(
       'testbranch',
       secondTimeStamp,
