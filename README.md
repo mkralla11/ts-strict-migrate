@@ -32,7 +32,8 @@ import {runTsStrictMigrate} from 'ts-strict-lint-migrate'
 
 async function run(): Promise<void> {
   const {success, lintResults, tsResults} = await runTsStrictMigrate({
-    // Path to your ts code
+    // Base path of your repository directory.
+    // This is needed for git operations.
     repoPath: `${__dirname}/../src`,
 
     // all committed files from this date to present 
