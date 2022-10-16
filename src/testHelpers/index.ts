@@ -67,7 +67,7 @@ export function example(){
 
 const tsTestData1 = `
 import {MyComponent} from 'root/nested/example4'
-export function example1(){
+export function example1(): void{
     return 'something'
 }
 `;
@@ -84,7 +84,7 @@ const tsTestData2 = `
 `;
 
 const tsTestData3 = `/* eslint-disable */
-export function example3(): void {
+export function example3(): boolean {
   return 'something'
 }
 

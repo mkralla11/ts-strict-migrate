@@ -13,9 +13,9 @@ export type PermittedTSCompilerOptions = Pick<
   'baseUrl'
   >
 
-interface IcreatedFiles {
-  [key: string]: string
-}
+// interface IcreatedFiles {
+//   [key: string]: string
+// }
 
 export interface ICompileResult {
   prettyResult: string,
@@ -53,16 +53,27 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
 
   // Create a Program with an in-memory emit
   // const createdFiles: IcreatedFiles = {};
-  let program: ts.Program;
+  // let program: ts.Program;
+  let fileNamesMap: Map<string, string> = new Map();
   // let host: ts.FormatDiagnosticsHost;
 
+  const host = ts.createIncrementalCompilerHost(composedOptions)
+  let builderProgram: ts.SemanticDiagnosticsBuilderProgram;
+  // host.writeFile = (fileName: string, contents: string) => {
+  //   // createdFiles[fileName] = contents;
+  // };
+
   function createProgram(fileNames: string[]): ts.Program {
-    const host = ts.createCompilerHost(composedOptions);
-    host.writeFile = (/*fileName: string, contents: string*/) => {
-      // createdFiles[fileName] = contents;
-    };
-    program = ts.createProgram(fileNames, composedOptions, host);
-    return program;
+    fileNamesMap = new Map()
+    for (const fileName of fileNames) {fileNamesMap.set(fileName, fileName)}
+    
+    builderProgram = ts.createSemanticDiagnosticsBuilderProgram(
+      fileNames,
+      composedOptions,
+      host,
+      builderProgram
+    )
+    return builderProgram.getProgram();
   }
 
   function getConfig(): ts.CompilerOptions {
@@ -70,10 +81,16 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
   }
 
   function compile(): ICompileResult {
-    const emitResult = program.emit();
-
-    const allDiagnostics = ts
-      .getPreEmitDiagnostics(program);
+    const emitResult = builderProgram.emit();
+    if(!builderProgram){
+      throw new Error('compile called before createProgram')
+    }
+    // console.log(fileNamesMap)
+    const allDiagnostics = ts.getPreEmitDiagnostics(builderProgram.getProgram())
+      .filter(({file: {fileName=''}={}}: {file?: {fileName?: string}})=>{
+        // console.log('diagnostic', fileName)
+        return fileNamesMap.has(fileName)
+      })
       // .concat(emitResult.diagnostics);
 
     // const rawResult: string[] = [];

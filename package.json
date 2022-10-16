@@ -13,7 +13,7 @@
     "lint": "eslint src",
     "build": "tsc",
     "test": "jest",
-    "test:watch": "node ./node_modules/jest/bin/jest.js --runInBand --watch",
+    "test:watch": "node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand --watch",
     "prepare": "husky install"
   },
   "repository": {

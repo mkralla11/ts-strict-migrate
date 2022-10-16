@@ -80,13 +80,14 @@ describe('runTsStrictMigrate', () => {
   });
 
   it('should execute runTsStrictMigrate on all staged and new committed files after date', async () => {
-    await gitAddAllTestFiles();
+    // await gitAddAllTestFiles();
     const secondTimeStamp = Object.keys(committedTimestampsToFiles)[1];
     const tsStrictLintMigrate = createTsStrictLintMigrate({
       repoPath: `${__dirname}/gitTestData`,
       includeStagedFiles: true,
-      includeFilesInCommitsNotInMaster: true,
-      includeFilesAfterDate: secondTimeStamp,
+      includeAllCurrentBranchCommitedFilesNotInMaster: true,
+      includeCurrentBranchCommitedFiles: true,
+      leakDate: secondTimeStamp,
       tsCompilerOpts: {
         baseUrl: `${__dirname}/gitTestData`,
         paths: {
@@ -120,22 +121,23 @@ describe('runTsStrictMigrate', () => {
     expect(res.success).toEqual(false);
     expect(res.lintSuccess).toEqual(false);
     expect(res.tsSuccess).toEqual(false);
-    expect(res?.lintResults?.lintResult?.length).toEqual(3)
+    expect(res?.lintResults?.lintResult?.length).toEqual(2)
     expect(res?.lintResults?.lintResult?.[0]?.errorCount).toEqual(3);
-    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(3);
+    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(12);
   });
 
 
   it('should watch', async () => {
-    await gitAddAllTestFiles();
+    // await gitAddAllTestFiles();
     const exposedPromise = createExposedPromise<IRunTsStrictMigrateResultOrProm>()
     const exposedPromise1 = createExposedPromise<IRunTsStrictMigrateResultOrProm>()
     let count = 0
 
     const opts = {
       repoPath: `${__dirname}/gitTestData`,
-      includeFilesInCommitsNotInMaster: true,
+      includeAllCurrentBranchCommitedFilesNotInMaster: true,
       includeStagedFiles: true,
+      includeUnstagedFiles: true,
       watchIncludedFiles: true,
       tsCompilerOpts: {
         baseUrl: `${__dirname}/gitTestData`,
@@ -184,9 +186,9 @@ describe('runTsStrictMigrate', () => {
     expect(res.success).toEqual(false);
     expect(res.lintSuccess).toEqual(false);
     expect(res.tsSuccess).toEqual(false);
-    expect(res?.lintResults?.lintResult?.length).toEqual(3)
+    expect(res?.lintResults?.lintResult?.length).toEqual(2)
     expect(res?.lintResults?.lintResult?.[0]?.errorCount).toEqual(3);
-    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(3);
+    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(12);
 
     const newData = `
 
@@ -197,15 +199,15 @@ describe('runTsStrictMigrate', () => {
     await writeFile(tsTestFile4, newData);
     
     const res1: IRunTsStrictMigrateResult = await exposedPromise1.promise
-
+    debugger
     console.log(res1?.tsResults?.prettyResult);
     console.log(res1?.lintResults?.prettyResult);
     expect(res1.success).toEqual(false);
     expect(res1.lintSuccess).toEqual(false);
     expect(res1.tsSuccess).toEqual(false);
-    expect(res1?.lintResults?.lintResult?.length).toEqual(3)
-    expect(res1?.lintResults?.lintResult?.[0]?.errorCount).toEqual(2);
-    expect(res1?.lintResults?.lintResult?.[1]?.errorCount).toEqual(3);
+    expect(res1?.lintResults?.lintResult?.length).toEqual(2)
+    expect(res1?.lintResults?.lintResult?.[0]?.errorCount).toEqual(3);
+    expect(res1?.lintResults?.lintResult?.[1]?.errorCount).toEqual(0);
 
     // await delay(10000)
     await tsStrictLintMigrate.stop()

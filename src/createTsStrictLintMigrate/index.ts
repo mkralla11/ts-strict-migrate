@@ -54,7 +54,7 @@ export async function getUnstagedAndStagedChangedFilesAfterDate(
     "--porcelain"
   ])
 
-  let unstagedAndStagedFilesArray: string[] = unstagedAndStagedFiles
+  const unstagedAndStagedFilesArray: string[] = unstagedAndStagedFiles
     .split('\n')
 
 
@@ -71,9 +71,9 @@ export async function getUnstagedAndStagedChangedFilesAfterDate(
 
   const changedFilesMap = new Map<string, string>();
 
-  changedFiles.forEach((name)=>{
+  for (const name of changedFiles) {
     changedFilesMap.set(name, name)
-  })
+  }
 
   // console.log(changedFilesMap)
   const newFilesAfterDate = await getFilesAfterDateForBranch(
@@ -151,9 +151,11 @@ export interface IRunTsStrictMigrateResult {
 interface ICreateTsStrictMigrateOptions {
   repoPath: string,
   includeStagedFiles?: boolean,
-  includeFilesAfterDate?: string,
-  includeFilesInCommitsNotInMaster?: boolean,
+  includeUnstagedFiles?: boolean,
+  includeCurrentBranchCommitedFiles?: boolean,
+  includeAllCurrentBranchCommitedFilesNotInMaster?: boolean,
   watchIncludedFiles?: boolean,
+  leakDate?: string,
   tsCompilerOpts?: PermittedTSCompilerOptions,
   esLintCompilerOpts?: PermittedEsLintCompilerOptions,
   onResults?: (results: IRunTsStrictMigrateResult)=>void
@@ -167,9 +169,11 @@ interface ICreateTsStrictMigrateInst {
 export function createTsStrictLintMigrate({
   repoPath,
   includeStagedFiles,
-  includeFilesAfterDate,
-  includeFilesInCommitsNotInMaster,
+  includeUnstagedFiles,
+  includeCurrentBranchCommitedFiles,
+  includeAllCurrentBranchCommitedFilesNotInMaster,
   watchIncludedFiles,
+  leakDate,
   tsCompilerOpts: tsCompilerOptions = {},
   esLintCompilerOpts: esLintCompilerOptions = {},
   onResults,
@@ -184,26 +188,43 @@ export function createTsStrictLintMigrate({
     // threshold at 70% for now
     let stagedFiles: string[] = [];
     let filesInCommitsNotInMaster: string[] = [];
+    let unstagedAndStagedFiles: string[] = [];
+    let newFilesAfterDate: string[] = [];
+
     const currentBranchName = await git.revparse(['--abbrev-ref', 'HEAD' ]);
 
     if (includeStagedFiles) {
       stagedFiles = await getStagedNewFiles(git);
     }
-    if (includeFilesInCommitsNotInMaster) {
+    if (includeUnstagedFiles && leakDate) {
+      unstagedAndStagedFiles = await getUnstagedAndStagedChangedFilesAfterDate(
+        currentBranchName,
+        leakDate,
+        git,
+      )
+    }
+
+    if (includeAllCurrentBranchCommitedFilesNotInMaster) {
       filesInCommitsNotInMaster = await getFilesInCommitsNotOnMasterFor(currentBranchName, git);
     }
 
-    let allNewFiles: string[] = [...stagedFiles, ...filesInCommitsNotInMaster]
 
 
-    if (includeFilesAfterDate) {
-      const newFilesAfterDate = await getFilesAfterDateForBranch(
+    if (includeCurrentBranchCommitedFiles && leakDate) {
+      newFilesAfterDate = await getFilesAfterDateForBranch(
         currentBranchName,
-        includeFilesAfterDate,
+        leakDate,
         git,
       );
-      allNewFiles = [...allNewFiles, ...newFilesAfterDate];
     }
+
+    let allNewFiles: string[] = [
+      ...stagedFiles, 
+      ...unstagedAndStagedFiles, 
+      ...filesInCommitsNotInMaster, 
+      ...newFilesAfterDate
+    ]
+
 
     const success = logErrorsForProhibitedFileExtensions(allNewFiles);
 
@@ -214,7 +235,7 @@ export function createTsStrictLintMigrate({
     }
 
     allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file) && !/^node_modules\/.+$/.test(file));
-
+    allNewFiles = [...new Set(allNewFiles)]
     const files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
 
     const tsProgram = tsCompiler.createProgram(files);
@@ -342,6 +363,7 @@ function createWatcher(): Watcher {
     // Add event listeners.
     internalWatcher
       .on('change', (path: string) => {
+        // console.log('changed', path)
         eventEmitter.emit('change', path);
       });
     // .on('add', (path: string )=> {
