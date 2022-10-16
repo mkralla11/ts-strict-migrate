@@ -41,11 +41,23 @@ async function run(): Promise<void> {
     leakDate: "2020-01-01",
 
     // In case you want to make sure no one can bypass your strict type checking
-    // and linting, you can turn on this option in your CICD pipeline
+    // and linting, you can turn on this option in your CI/CD pipeline
     // so builds will fail for the given Pull Request if anyone
-    // tries to backdate files
+    // tries to back-date files.
+    // This option includes ALL files committed in the current branch that 
+    // are not in master, regardless of leakDate.
     // default: false
     includeAllCurrentBranchCommitedFilesNotInMaster: !!process.env.CI,
+
+
+    // This option is similar to the above, but respects
+    // the leak date. It is a more relaxed option to use in CI/CD,
+    // and theoretically code allow devs to bypass if they know
+    // how to back-date files.
+    // Any files in the current branch that were added after
+    // the leak date will be strict type checked and linted.
+    includeCurrentBranchCommitedFiles: !!process.env.CI,
+
 
     // This option should be used in a pre-commit hook for good DX
     // (also good to use in watch mode)
