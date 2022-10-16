@@ -52,7 +52,7 @@ async function run(): Promise<void> {
 
     // This option is similar to the above, but respects
     // the leak date. It is a more relaxed option to use in CI/CD,
-    // and theoretically code allow devs to bypass if they know
+    // and theoretically could allow devs to bypass if they know
     // how to back-date files.
     // Any files in the current branch that were added after
     // the leak date will be strict type checked and linted.
