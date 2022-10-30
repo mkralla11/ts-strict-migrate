@@ -39,6 +39,7 @@ export interface RunTsStrictLintMigrateResult {
 
 export interface CreateTsStrictLintMigrateOptions {
   repoPath: string,
+  extraFiles?: string[],
   includeStagedFiles?: boolean,
   includeUnstagedFiles?: boolean,
   includeCurrentBranchCommitedFiles?: boolean,
@@ -57,6 +58,7 @@ export interface TsStrictLintMigrate {
 
 export function createTsStrictLintMigrate({
   repoPath,
+  extraFiles,
   includeStagedFiles,
   includeUnstagedFiles,
   includeCurrentBranchCommitedFiles,
@@ -111,8 +113,11 @@ export function createTsStrictLintMigrate({
       ...stagedFiles, 
       ...unstagedAndStagedFiles, 
       ...filesInCommitsNotInMaster, 
-      ...newFilesAfterDate
+      ...newFilesAfterDate,
+      ...(extraFiles || [])
     ]
+
+    allNewFiles = [...new Set(allNewFiles)]
 
 
     const success = logErrorsForProhibitedFileExtensions(allNewFiles);
@@ -124,7 +129,6 @@ export function createTsStrictLintMigrate({
     }
 
     allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file) && !/^node_modules\/.+$/.test(file));
-    allNewFiles = [...new Set(allNewFiles)]
     const files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
 
     const tsProgram = tsCompiler.createProgram(files);
