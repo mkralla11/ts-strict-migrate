@@ -49,7 +49,7 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
     exclude: ['node_modules'],
   };
 
-  const composedOptions: ts.CompilerOptions = { ...options, ...forceCompilerOptions };
+  const composedOptions: ts.CompilerOptions = { ...forceCompilerOptions, ...options };
 
   // Create a Program with an in-memory emit
   // const createdFiles: IcreatedFiles = {};

@@ -38,10 +38,10 @@ npm install --save-dev ts-strict-lint-migrate
 
 **my-typescript-project/tsStrictLintMigratRunner/run.ts**
 ```typescript
-import {runTsStrictMigrate} from 'ts-strict-lint-migrate'
+import {createTsStrictLintMigrate, RunTsStrictLintMigrateResultOrProm} from 'ts-strict-lint-migrate'
 
 async function run(): Promise<void> {
-  const {success, lintResults, tsResults} = await runTsStrictMigrate({
+  const tsStrictLintMigrate = await createTsStrictLintMigrate({
     // Base path of your repository directory.
     // This is needed for git operations.
     repoPath: `${__dirname}/../src`,
@@ -84,7 +84,6 @@ async function run(): Promise<void> {
 
     // Any Typescript compiler options
     tsCompilerOpts: {
-      // ...
       // helpful to set baseUrl to
       // adjust ts import paths
       baseUrl: `${__dirname}/../src`,
@@ -95,18 +94,25 @@ async function run(): Promise<void> {
 
     // Any eslint configuration
     esLintCompilerOpts: {
-      // ...
       settings: {
-        // ...
+        // react version is required as it should not be inferred
+          "react": {
+            "version": "16.6.3"
+          }
       }
-    }
+    },
     onResults: ({success, lintResults, tsResults}: RunTsStrictLintMigrateResultOrProm)=>{
       if(!success){
         tsResults?.prettyResult && console.log("\nTypescript Errors\n\n", tsResults.prettyResult)
         lintResults?.prettyResult && console.log("\nESLint Errors\n\n", lintResults.prettyResult)
         console.error("\n\nFailed ts strict type checking and linting. Please fixe the errors above. \n\n")
-        process.exit(1)
+
+        // Exit process error if running in CI
+        if(process.env.CI){
+          process.exit(1)
+        }
       }
+    }
   })
 
   await tsStrictLintMigrate.run()

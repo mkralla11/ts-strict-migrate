@@ -6,5 +6,6 @@ export {
   createTsStrictLintMigrate, 
   CreateTsStrictLintMigrateOptions,
   TsStrictLintMigrate,
-  RunTsStrictLintMigrateResult
+  RunTsStrictLintMigrateResult,
+  RunTsStrictLintMigrateResultOrProm
 } from './createTsStrictLintMigrate';

@@ -31,7 +31,7 @@ import {
   writeFile
 } from 'fs-extra';
 
-type RunTsStrictLintMigrateResultOrProm = RunTsStrictLintMigrateResult | PromiseLike<RunTsStrictLintMigrateResult>
+export type RunTsStrictLintMigrateResultOrProm = RunTsStrictLintMigrateResult | PromiseLike<RunTsStrictLintMigrateResult>
 
 
 describe('runTsStrictMigrate', () => {
