@@ -7,5 +7,4 @@ export {
   CreateTsStrictLintMigrateOptions,
   TsStrictLintMigrate,
   RunTsStrictLintMigrateResult,
-  RunTsStrictLintMigrateResultOrProm
 } from './createTsStrictLintMigrate';
