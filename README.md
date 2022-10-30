@@ -6,13 +6,13 @@ Migrating from JavaScript to strict TypeScript and ESLint all at once is hard.
 This library makes the transition easy by strict type-checking and linting *only new files* added to git *after* the desired leak date, ie. the date you start your migration.
 
 
-### Install the package
+1. Install the package
 
 ```bash
 npm install --save-dev ts-strict-lint-migrate
 ```
 
-### Add npm script command to your project's package.json to run ts-strict-lint-migrate
+2. Add npm script command to your project's package.json to run ts-strict-lint-migrate
 
 
 **my-typescript-project/package.json**
@@ -34,7 +34,7 @@ npm install --save-dev ts-strict-lint-migrate
 
 ```
 
-### Add new file to configure and run ts-strict-lint-migrate 
+3. Add new file to configure and run ts-strict-lint-migrate 
 
 **my-typescript-project/tsStrictLintMigratRunner/run.ts**
 ```typescript
@@ -123,7 +123,7 @@ run().catch((e)=>{
 
 
 
-### Run the script from the command line of your project
+4. Run the script from the command line of your project
 
 ```bash
 npm run ts-strict-lint-migrate
