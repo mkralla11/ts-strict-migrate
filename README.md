@@ -38,7 +38,7 @@ npm install --save-dev ts-strict-lint-migrate
 
 **my-typescript-project/tsStrictLintMigratRunner/run.ts**
 ```typescript
-import {createTsStrictLintMigrate, RunTsStrictLintMigrateResultOrProm} from 'ts-strict-lint-migrate'
+import {createTsStrictLintMigrate, RunTsStrictLintMigrateResult} from 'ts-strict-lint-migrate'
 
 async function run(): Promise<void> {
   const tsStrictLintMigrate = await createTsStrictLintMigrate({
@@ -101,7 +101,7 @@ async function run(): Promise<void> {
           }
       }
     },
-    onResults: ({success, lintResults, tsResults}: RunTsStrictLintMigrateResultOrProm)=>{
+    onResults: ({success, lintResults, tsResults}: RunTsStrictLintMigrateResult)=>{
       if(!success){
         tsResults?.prettyResult && console.log("\nTypescript Errors\n\n", tsResults.prettyResult)
         lintResults?.prettyResult && console.log("\nESLint Errors\n\n", lintResults.prettyResult)
