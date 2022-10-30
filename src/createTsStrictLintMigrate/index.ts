@@ -10,7 +10,6 @@ import {
   PermittedEsLintCompilerOptions as PermittedEsLintCompilerOptions 
 } from '../linter';
 import {
-  getDiffNamesOnlyWithFlags,
   getStagedNewFiles,
   getUnstagedAndStagedChangedFilesAfterDate,
   getFilesAfterDateForBranch,
