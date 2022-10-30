@@ -6,14 +6,14 @@ export function delay(ms: number): Promise<void> {
   });
 }
 
-export interface ILintResult {
+export interface LintResult {
   prettyResult: string,
   lintResult: ESLint.LintResult[]
 }
 
 export type PermittedEsLintCompilerOptions = ESLint.Options['baseConfig']
 
-export async function lint(filePaths: string[], eslintOptions?: PermittedEsLintCompilerOptions): Promise<ILintResult> {
+export async function lint(filePaths: string[], eslintOptions?: PermittedEsLintCompilerOptions): Promise<LintResult> {
   eslintOptions = typeof eslintOptions === 'undefined' ? {} as NonNullable<PermittedEsLintCompilerOptions> : eslintOptions;
 
   const forcedOptions: ESLint.Options = {

@@ -1,12 +1,17 @@
 import { SimpleGit } from 'simple-git';
 import { 
+  createTsStrictLintMigrate,
+  RunTsStrictLintMigrateResult
+} from './createTsStrictLintMigrate';
+
+import { 
   getFilesAfterDateForBranch, 
   getStagedNewFiles, 
   getUnstagedAndStagedChangedFilesAfterDate,
-  createTsStrictLintMigrate,
-  getFilesInCommitsNotOnMasterFor,
-  IRunTsStrictMigrateResult
-} from './createTsStrictLintMigrate';
+  getFilesInCommitsNotOnMasterFor
+} from './gitHelpers';
+
+
 import {
   ensureTestGitRepoExists,
   removeTestRepo,
@@ -26,7 +31,7 @@ import {
   writeFile
 } from 'fs-extra';
 
-type IRunTsStrictMigrateResultOrProm = IRunTsStrictMigrateResult | PromiseLike<IRunTsStrictMigrateResult>
+type RunTsStrictLintMigrateResultOrProm = RunTsStrictLintMigrateResult | PromiseLike<RunTsStrictLintMigrateResult>
 
 
 describe('runTsStrictMigrate', () => {
@@ -116,8 +121,8 @@ describe('runTsStrictMigrate', () => {
     });
 
     const res = await tsStrictLintMigrate.run()
-    console.log(res?.tsResults?.prettyResult);
-    console.log(res?.lintResults?.prettyResult);
+    // console.log(res?.tsResults?.prettyResult);
+    // console.log(res?.lintResults?.prettyResult);
     expect(res.success).toEqual(false);
     expect(res.lintSuccess).toEqual(false);
     expect(res.tsSuccess).toEqual(false);
@@ -129,8 +134,8 @@ describe('runTsStrictMigrate', () => {
 
   it('should watch', async () => {
     // await gitAddAllTestFiles();
-    const exposedPromise = createExposedPromise<IRunTsStrictMigrateResultOrProm>()
-    const exposedPromise1 = createExposedPromise<IRunTsStrictMigrateResultOrProm>()
+    const exposedPromise = createExposedPromise<RunTsStrictLintMigrateResultOrProm>()
+    const exposedPromise1 = createExposedPromise<RunTsStrictLintMigrateResultOrProm>()
     let count = 0
 
     const opts = {
@@ -164,7 +169,7 @@ describe('runTsStrictMigrate', () => {
           }
         }
       },
-      onResults: (res: IRunTsStrictMigrateResultOrProm)=>{
+      onResults: (res: RunTsStrictLintMigrateResultOrProm)=>{
         count = count + 1
         if(count === 1){
           exposedPromise.resolve(res)
@@ -179,10 +184,10 @@ describe('runTsStrictMigrate', () => {
     await tsStrictLintMigrate.run()
   
 
-    const res: IRunTsStrictMigrateResult = await exposedPromise.promise
+    const res: RunTsStrictLintMigrateResult = await exposedPromise.promise
 
-    console.log(res?.tsResults?.prettyResult);
-    console.log(res?.lintResults?.prettyResult);
+    // console.log(res?.tsResults?.prettyResult);
+    // console.log(res?.lintResults?.prettyResult);
     expect(res.success).toEqual(false);
     expect(res.lintSuccess).toEqual(false);
     expect(res.tsSuccess).toEqual(false);
@@ -198,10 +203,9 @@ describe('runTsStrictMigrate', () => {
 
     await writeFile(tsTestFile4, newData);
     
-    const res1: IRunTsStrictMigrateResult = await exposedPromise1.promise
-    debugger
-    console.log(res1?.tsResults?.prettyResult);
-    console.log(res1?.lintResults?.prettyResult);
+    const res1: RunTsStrictLintMigrateResult = await exposedPromise1.promise
+    // console.log(res1?.tsResults?.prettyResult);
+    // console.log(res1?.lintResults?.prettyResult);
     expect(res1.success).toEqual(false);
     expect(res1.lintSuccess).toEqual(false);
     expect(res1.tsSuccess).toEqual(false);

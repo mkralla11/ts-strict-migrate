@@ -2,4 +2,9 @@
 
 
 
-export {createTsStrictLintMigrate, IRunTsStrictMigrateResult} from './createTsStrictLintMigrate';
+export {
+  createTsStrictLintMigrate, 
+  CreateTsStrictLintMigrateOptions,
+  TsStrictLintMigrate,
+  RunTsStrictLintMigrateResult
+} from './createTsStrictLintMigrate';

@@ -1,154 +1,44 @@
 import { simpleGit, SimpleGit } from 'simple-git';
-// import { JsxEmit } from 'typescript';
-import { FSWatcher, watch } from 'chokidar';
-import { EventEmitter } from 'node:events';
-import { createTSCompiler, ICompileResult, PermittedTSCompilerOptions } from '../createTSCompiler';
-import { lint, ILintResult, PermittedEsLintCompilerOptions as PermittedEsLintCompilerOptions } from '../linter';
+import { 
+  createTSCompiler, 
+  CompileResult, 
+  PermittedTSCompilerOptions 
+} from '../createTSCompiler';
+import { 
+  lint, 
+  LintResult, 
+  PermittedEsLintCompilerOptions as PermittedEsLintCompilerOptions 
+} from '../linter';
+import {
+  getDiffNamesOnlyWithFlags,
+  getStagedNewFiles,
+  getUnstagedAndStagedChangedFilesAfterDate,
+  getFilesAfterDateForBranch,
+  getFilesInCommitsNotOnMasterFor
+} from '../gitHelpers'
+import {
+  debounce,
+  logErrorsForProhibitedFileExtensions
+} from '../utilities'
 
-function debounce<F extends(
-...arguments_: Parameters<F>) => ReturnType<F>>(
-  function_: F,
-  waitFor: number,
-): (...arguments_: Parameters<F>) => void {
-  let timeout: NodeJS.Timeout;
-  return (...arguments_: Parameters<F>): void => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => function_(...arguments_), waitFor);
-  };
-}
-
-type Flag = string
-
-type Flags = Flag[]
-
-export async function getDiffNamesOnlyWithFlags(git: SimpleGit, flags: Flags): Promise<string[]> {
-
-  const files: string = await git.diff([
-    "--name-only",
-    "-M70%",
-    ...flags
-  ])
-
-
-  const filesArray: string[] = files.split('\n').filter((x) => !!x) 
-  return filesArray;
-}
-
-export async function getStagedNewFiles(git: SimpleGit): Promise<string[]> {
-
-  const allNewFiles = await getDiffNamesOnlyWithFlags(git, ["--diff-filter=AC", "--cached"])
-
-  return allNewFiles;
-}
+import {
+  createWatcher,
+  Watcher,
+  handleUnwatch,
+  handleWatch
+} from '../createWatcher'
 
 
-export async function getUnstagedAndStagedChangedFilesAfterDate(
-  branchName: string,
-  date: string,
-  git: SimpleGit,
-): Promise<string[]> {
-
-  const unstagedAndStagedFiles: string = await git.raw([
-    "status",
-    "-M70%",
-    "--porcelain"
-  ])
-
-  const unstagedAndStagedFilesArray: string[] = unstagedAndStagedFiles
-    .split('\n')
-
-
-
-  const newAndUntrackedFiles = unstagedAndStagedFilesArray
-    .filter((name)=>['A ', '??'].includes(name.slice(0,2)))
-    .map((name)=>name.slice(3))
-
-
-  // Modified Staged, Modified Unstaged
-  const changedFiles = unstagedAndStagedFilesArray
-    .filter((name)=>['M ', ' M'].includes(name.slice(0,2)))
-    .map((name)=>name.slice(3))
-
-  const changedFilesMap = new Map<string, string>();
-
-  for (const name of changedFiles) {
-    changedFilesMap.set(name, name)
-  }
-
-  // console.log(changedFilesMap)
-  const newFilesAfterDate = await getFilesAfterDateForBranch(
-    branchName,
-    date,
-    git,
-  )
-
-  const changedFilesAfterDate = newFilesAfterDate.filter((name)=>changedFilesMap.has(name))
-
-  return [...changedFilesAfterDate, ...newAndUntrackedFiles]
-}
-
-export async function getFilesAfterDateForBranch(
-  branchName: string,
-  date: string,
-  git: SimpleGit,
-): Promise<string[]> {
-  const newFilesAfterDate = await git.raw([
-    'log',
-    branchName,
-    `--since=${date}`,
-    '--name-only',
-    '--diff-filter=AC',
-    '-M70%',
-    '--pretty=format:',
-  ]);
-
-  const newFilesAfterDateArray = newFilesAfterDate.split('\n').filter((x) => !!x)
-  return newFilesAfterDateArray;
-}
-
-export function logErrorsForProhibitedFileExtensions(files: string[]): boolean {
-  let sucess = true;
-  for (const file of files) {
-    if ((file.slice(-3) === '.js' || file.slice(-4) === '.jsx') && !/^node_modules\/.+$/.test(file)) {
-      console.error(`
-Please use .ts(x) extension instead of .js(x)
-${file}
-      `);
-      sucess = false;
-    }
-  }
-
-  return sucess;
-}
-
-export async function getFilesInCommitsNotOnMasterFor(
-  currentBranchName: string,
-  git: SimpleGit,
-): Promise<string[]> {
-  const string_ = await git.raw([
-    'log',
-    currentBranchName,
-    '--name-only',
-    '--not',
-    `--exclude=${currentBranchName}`,
-    '--branches',
-    '--remotes',
-    '--pretty=format:',
-  ])
-
-  return string_.split('\n').filter(Boolean);
-}
-
-export interface IRunTsStrictMigrateResult {
-  lintResults?: ILintResult,
-  tsResults?: ICompileResult,
+export interface RunTsStrictLintMigrateResult {
+  lintResults?: LintResult,
+  tsResults?: CompileResult,
   strictFiles?: string[],
   lintSuccess?: boolean,
   tsSuccess?: boolean,
   success: boolean
 }
 
-interface ICreateTsStrictMigrateOptions {
+export interface CreateTsStrictLintMigrateOptions {
   repoPath: string,
   includeStagedFiles?: boolean,
   includeUnstagedFiles?: boolean,
@@ -158,11 +48,11 @@ interface ICreateTsStrictMigrateOptions {
   leakDate?: string,
   tsCompilerOpts?: PermittedTSCompilerOptions,
   esLintCompilerOpts?: PermittedEsLintCompilerOptions,
-  onResults?: (results: IRunTsStrictMigrateResult)=>void
+  onResults?: (results: RunTsStrictLintMigrateResult)=>void
 }
 
-interface ICreateTsStrictMigrateInst {
-  run: ()=>Promise<IRunTsStrictMigrateResult>,
+export interface TsStrictLintMigrate {
+  run: ()=>Promise<RunTsStrictLintMigrateResult>,
   stop: ()=>Promise<void>
 }
 
@@ -177,11 +67,11 @@ export function createTsStrictLintMigrate({
   tsCompilerOpts: tsCompilerOptions = {},
   esLintCompilerOpts: esLintCompilerOptions = {},
   onResults,
-}: ICreateTsStrictMigrateOptions): ICreateTsStrictMigrateInst {
+}: CreateTsStrictLintMigrateOptions): TsStrictLintMigrate {
   let watcher: Watcher = createWatcher();
   const tsCompiler = createTSCompiler(tsCompilerOptions);
 
-  async function run(): Promise<IRunTsStrictMigrateResult> {
+  async function run(): Promise<RunTsStrictLintMigrateResult> {
     const git: SimpleGit = simpleGit(repoPath, { binary: 'git' });
     // git uses a similarity test to determine if a file is
     // renamed or considered a true "change", so we set the
@@ -297,117 +187,7 @@ export function createTsStrictLintMigrate({
   };
 }
 
-interface IHandleWatchArguments {
-  files: string[]
-  watchEnabled: boolean
-  watcher: Watcher
-}
 
-function handleUnwatch({ files, watchEnabled, watcher }: IHandleWatchArguments): void {
-  watchEnabled && watcher.unwatchFiles(files);
-}
-
-function handleWatch({ files, watchEnabled, watcher }: IHandleWatchArguments): void {
-  watchEnabled && watcher.watchFiles(files);
-}
-
-type watchUnwatchFunction = (files: string[])=>void
-
-interface EventMap {
-  add: (path: string) => void;
-  change: (path: string) => void;
-  unlink: (path: string) => void;
-  addDir: (path: string) => void;
-  unlinkDir: (path: string) => void;
-  error: (error: Error) => void;
-  ready: () => void;
-  raw: (event:string, path:string) => void;
-}
-
-interface EventsBase {
-  // matches EventEmitter.on
-  on<U extends keyof EventMap>(event: U, listener: EventMap[U]): this;
-
-  // matches EventEmitter.off
-  off<U extends keyof EventMap>(event: U, listener: EventMap[U]): this;
-
-  // matches EventEmitter.emit
-  emit<U extends keyof EventMap>(
-      event: U,
-      ...arguments_: Parameters<EventMap[U]>
-  ): void;
-}
-
-type publicEmitterFunctionMap = Pick<EventsBase, 'on' | 'off'>
-
-interface Watcher extends publicEmitterFunctionMap {
-  init: ()=>void
-  close: ()=>Promise<void>
-  unwatchFiles: watchUnwatchFunction
-  watchFiles: watchUnwatchFunction
-}
-
-function createWatcher(): Watcher {
-  let internalWatcher: FSWatcher;
-  const eventEmitter: EventsBase = new EventEmitter();
-
-  function init() {
-    internalWatcher = watch([], {
-      ignored: /(^|[/\\])\../, // ignore dotfiles
-      persistent: true,
-      followSymlinks: true,
-    });
-
-    // Something to use when events are received.
-    // const log = console.log.bind(console);
-    // Add event listeners.
-    internalWatcher
-      .on('change', (path: string) => {
-        // console.log('changed', path)
-        eventEmitter.emit('change', path);
-      });
-    // .on('add', (path: string )=> {
-    //   debugger
-    //   log(`File ${path} has been added`)
-    //   eventEmitter.emit('add', path)
-    // })
-    // .on('unlink', (path: string ) => log(`File ${path} has been removed`));
-    // // More possible events.
-    // internalWatcher
-    //   .on('addDir', (path: string ) => log(`Directory ${path} has been added`))
-    //   .on('unlinkDir', (path: string ) => log(`Directory ${path} has been removed`))
-    //   .on('error', (error: string ) => log(`Watcher error: ${error}`))
-    //   .on('ready', () => log('Initial scan complete. Ready for changes'))
-    //   .on('raw', (event: string, path: string, details: unknown) => { // internal
-    //     log('Raw event info:', event, path, details);
-    //   });
-  }
-
-  const unwatchFiles: watchUnwatchFunction = (files) => {
-    if (internalWatcher) {
-      internalWatcher.unwatch(files);
-    }
-  };
-
-  const watchFiles: watchUnwatchFunction = (files) => {
-    if (internalWatcher) {
-      internalWatcher.add(files);
-    }
-  };
-
-  async function close(): Promise<void> {
-    await internalWatcher.close();
-  }
-
-  return {
-    init,
-    close,
-    unwatchFiles,
-    watchFiles,
-    on: eventEmitter.on.bind(eventEmitter),
-    off: eventEmitter.on.bind(eventEmitter),
-  };
-}
 
 /*
  // get current branch

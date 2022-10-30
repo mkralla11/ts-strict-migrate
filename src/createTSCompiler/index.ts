@@ -17,14 +17,14 @@ export type PermittedTSCompilerOptions = Pick<
 //   [key: string]: string
 // }
 
-export interface ICompileResult {
+export interface CompileResult {
   prettyResult: string,
   // rawResult: string,
   success: boolean
 }
 
 interface TSCompiler {
-  compile: (fileNames: string[])=>ICompileResult
+  compile: (fileNames: string[])=>CompileResult
   getConfig: ()=>ts.CompilerOptions
   createProgram: (fileNames: string[])=>ts.Program
 }
@@ -80,7 +80,7 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
     return composedOptions;
   }
 
-  function compile(): ICompileResult {
+  function compile(): CompileResult {
     const emitResult = builderProgram.emit();
     if(!builderProgram){
       throw new Error('compile called before createProgram')
