@@ -31,26 +31,36 @@ export async function getUnstagedAndStagedChangedFilesAfterDate(
   git: SimpleGit,
 ): Promise<string[]> {
 
-  const unstagedAndStagedFiles: string = await git.raw([
-    "status",
-    "-M70%",
-    "--porcelain"
-  ])
 
-  const unstagedAndStagedFilesArray: string[] = unstagedAndStagedFiles
-    .split('\n')
+
+  const status = await git.status()
 
 
 
-  const newAndUntrackedFiles = unstagedAndStagedFilesArray
-    .filter((name)=>['A ', '??'].includes(name.slice(0,2)))
-    .map((name)=>name.slice(3))
+
+
+  // const unstagedAndStagedFiles: string = await git.raw([
+  //   "status",
+  //   "-M70%",
+  //   "--porcelain"
+  // ])
+
+  // const unstagedAndStagedFilesArray: string[] = unstagedAndStagedFiles
+  //   .split('\n')
+
+
+
+  const newAndUntrackedFiles = [
+    ...status.not_added,
+    ...status.created
+  ]
 
 
   // Modified Staged, Modified Unstaged
-  const changedFiles = unstagedAndStagedFilesArray
-    .filter((name)=>['M ', ' M'].includes(name.slice(0,2)))
-    .map((name)=>name.slice(3))
+  const changedFiles = [
+    ...status.modified,
+    ...status.staged
+  ]
 
   const changedFilesMap = new Map<string, string>();
 

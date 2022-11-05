@@ -58,7 +58,8 @@ export function createWatcher(): Watcher {
   const eventEmitter: EventsBase = new EventEmitter();
 
   function init() {
-    internalWatcher = watch([], {
+    // we need to make sure we hang, so just watch this file
+    internalWatcher = watch(["{__dirname}/index.js"], {
       ignored: /(^|[/\\])\../, // ignore dotfiles
       persistent: true,
       followSymlinks: true,

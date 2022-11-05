@@ -41,7 +41,7 @@ export function createExposedPromise<T>(): ExposedPromise<T> {
   };
 }
 
-const testGitDirectory = `${__dirname}/../gitTestData`;
+export const testGitDirectory = `${__dirname}/../gitTestData`;
 const tsTestFile = `${testGitDirectory}/example.ts`;
 // used to test staged file
 export const testFileName1 = 'example1.ts';

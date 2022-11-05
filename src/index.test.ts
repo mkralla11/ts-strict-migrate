@@ -24,11 +24,13 @@ import {
   tsTestFilename4,
   tsTestFile4,
   tsTestFile2,
+  testGitDirectory,
   delay,
   createExposedPromise
 } from './testHelpers';
 import {
-  writeFile
+  writeFile,
+  ensureFile
 } from 'fs-extra';
 
 export type RunTsStrictLintMigrateResultOrProm = RunTsStrictLintMigrateResult | PromiseLike<RunTsStrictLintMigrateResult>
@@ -61,9 +63,14 @@ describe('runTsStrictMigrate', () => {
       console.log('SHOULD NOT BE CHECKED - NEW FILE ADDED BEFORE DATE.')
     `  
     await writeFile(tsTestFile2, newData2);
+    const untrackedFilename = 'nested/something/file.js'
+    const untrackedFile = `${testGitDirectory}/${untrackedFilename}`
+    await ensureFile(untrackedFile);
+    await writeFile(untrackedFile, newData2);
 
     const files = await getUnstagedAndStagedChangedFilesAfterDate('testbranch', timeStamp, git);
-    expect(files).toEqual([tsTestFilename4, testFileName1]);
+    
+    expect(files).toEqual([tsTestFilename4, testFileName1, untrackedFilename]);
   });
 
   it('should get all files in commits not in master', async () => {
