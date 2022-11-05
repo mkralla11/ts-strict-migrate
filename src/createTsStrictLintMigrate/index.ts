@@ -46,6 +46,7 @@ export interface CreateTsStrictLintMigrateOptions {
   includeAllCurrentBranchCommitedFilesNotInMaster?: boolean,
   watchIncludedFiles?: boolean,
   leakDate?: string,
+  excludeFiles?: string[],
   tsCompilerOpts?: PermittedTSCompilerOptions,
   esLintCompilerOpts?: PermittedEsLintCompilerOptions,
   onResults?: (results: RunTsStrictLintMigrateResult)=>void
@@ -65,6 +66,7 @@ export function createTsStrictLintMigrate({
   includeAllCurrentBranchCommitedFilesNotInMaster,
   watchIncludedFiles,
   leakDate,
+  excludeFiles,
   tsCompilerOpts: tsCompilerOptions = {},
   esLintCompilerOpts: esLintCompilerOptions = {},
   onResults,
@@ -129,7 +131,15 @@ export function createTsStrictLintMigrate({
     }
 
     allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file) && !/^node_modules\/.+$/.test(file));
-    const files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
+    let files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
+
+    if(excludeFiles && excludeFiles.length){
+      const excludeFilesObject = excludeFiles.reduce((acc: {[key: string]: boolean}, key)=>{
+        acc[key] = true
+        return acc
+      }, {})
+      files = files.filter((file)=>excludeFilesObject[file])
+    }
 
     const tsProgram = tsCompiler.createProgram(files);
 
