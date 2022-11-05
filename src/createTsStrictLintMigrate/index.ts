@@ -133,10 +133,10 @@ export function createTsStrictLintMigrate({
     allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file) && !/^node_modules\/.+$/.test(file));
     let files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
 
-    if(excludeFiles && excludeFiles.length){
-      const excludeFilesObject = excludeFiles.reduce((acc: {[key: string]: boolean}, key)=>{
-        acc[key] = true
-        return acc
+    if(excludeFiles && excludeFiles.length > 0){
+      const excludeFilesObject = excludeFiles.reduce((accumulator: {[key: string]: boolean}, key)=>{
+        accumulator[key] = true
+        return accumulator
       }, {})
       files = files.filter((file)=>excludeFilesObject[file])
     }
