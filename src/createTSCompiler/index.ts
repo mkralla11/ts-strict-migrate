@@ -122,7 +122,7 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
     return {
       // rawResult: rawResult.join('\n'),
       prettyResult: prettyResult,
-      success: !allDiagnostics.length,
+      success: allDiagnostics.length === 0,
     };
   }
 
