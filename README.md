@@ -44,7 +44,16 @@ async function run(): Promise<void> {
   const tsStrictLintMigrate = await createTsStrictLintMigrate({
     // Base path of your repository directory.
     // This is needed for git operations.
-    repoPath: `${__dirname}/../src`,
+    repoPath: `${__dirname}/../`,
+
+    // Files (or globs) to watch in watch mode 
+    // (when watchIncludedFiles is true).
+    // This allows you to be more selective when watching,
+    // to reduce resource usage
+    watchFiles: [`${__dirname}/../src/**/*`],
+
+    // ignore files from the watchFiles array
+    ignoreFilesFromWatch: /some-file-regex.ts/,
 
     // all committed files from this date to present 
     // that should strict type checked and linted

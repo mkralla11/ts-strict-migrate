@@ -54,14 +54,18 @@ export interface Watcher extends publicEmitterFunctionMap {
   watchFiles: watchUnwatchFunction
 }
 
-export function createWatcher(): Watcher {
+export interface WatcherOptions {
+  ignoreFilesFromWatch?: RegExp
+}
+
+export function createWatcher({ignoreFilesFromWatch}: WatcherOptions): Watcher {
   let internalWatcher: FSWatcher;
   const eventEmitter: EventsBase = new EventEmitter();
 
   function init() {
     // we need to make sure we hang, so just watch this file
     internalWatcher = watch(["{__dirname}/index.js"], {
-      ignored: /(^|[/\\])\../, // ignore dotfiles
+      ignored: ignoreFilesFromWatch,
       ignoreInitial: true,
       persistent: true,
       followSymlinks: true,

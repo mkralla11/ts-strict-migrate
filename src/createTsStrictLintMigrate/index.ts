@@ -45,6 +45,8 @@ export interface CreateTsStrictLintMigrateOptions {
   includeCurrentBranchCommitedFiles?: boolean,
   includeAllCurrentBranchCommitedFilesNotInMaster?: boolean,
   watchIncludedFiles?: boolean,
+  ignoreFilesFromWatch?: RegExp,
+  watchFiles: string[],
   leakDate?: string,
   excludeFiles?: string[],
   tsCompilerOpts?: PermittedTSCompilerOptions,
@@ -65,13 +67,15 @@ export function createTsStrictLintMigrate({
   includeCurrentBranchCommitedFiles,
   includeAllCurrentBranchCommitedFilesNotInMaster,
   watchIncludedFiles,
+  watchFiles,
+  ignoreFilesFromWatch,
   leakDate,
   excludeFiles,
   tsCompilerOpts: tsCompilerOptions = {},
   esLintCompilerOpts: esLintCompilerOptions = {},
   onResults,
 }: CreateTsStrictLintMigrateOptions): TsStrictLintMigrate {
-  let watcher: Watcher = createWatcher();
+  let watcher: Watcher = createWatcher({ignoreFilesFromWatch});
   const tsCompiler = createTSCompiler(tsCompilerOptions);
 
   async function run(): Promise<RunTsStrictLintMigrateResult> {
@@ -118,10 +122,10 @@ export function createTsStrictLintMigrate({
       ...newFilesAfterDate,
       ...(extraFiles || [])
     ]
-    console.log('running again')
+
     allNewFiles = [...new Set(allNewFiles)]
 
-    if(!allNewFiles.length){
+    if(allNewFiles.length === 0){
       return {
         success: true,
       };
@@ -158,7 +162,7 @@ export function createTsStrictLintMigrate({
     };
 
     // console.log('linting', files)
-    const repoPathAsArray = [repoPath]
+    const repoPathAsArray = watchFiles
     handleUnwatch({ files: repoPathAsArray, watchEnabled: !!watchIncludedFiles, watcher });
     const lintResults = await lint(files, composedEsLintCompilerOptions);
     handleWatch({ files: repoPathAsArray, watchEnabled: !!watchIncludedFiles, watcher });
@@ -191,19 +195,19 @@ export function createTsStrictLintMigrate({
 
   const runDebounced = debounce(run, 5);
 
-  function runCheckDebounced(event: string, path: string){
-    console.log('here', event, path)
-    runDebounced()
-  }
+  // function runCheckDebounced(event: string, path: string){
+  //   console.log('here', event, path)
+  //   runDebounced()
+  // }
   
   async function stop(): Promise<void> {
     await watcher.close();
   }
 
   if (watchIncludedFiles) {
-    watcher = createWatcher();
+    watcher = createWatcher({ignoreFilesFromWatch});
     watcher.init();
-    watcher.on('all', runCheckDebounced);
+    watcher.on('all', runDebounced);
     // watcher.on('change', runDebounced);
   }
 
