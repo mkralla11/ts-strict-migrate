@@ -26,7 +26,7 @@ import {
   handleUnwatch,
   handleWatch
 } from '../createWatcher'
-import path from 'path'
+import path from 'node:path'
 
 export interface RunTsStrictLintMigrateResult {
   lintResults?: LintResult,

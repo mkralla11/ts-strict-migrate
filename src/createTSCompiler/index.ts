@@ -117,12 +117,12 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
     // console.log(emitResult)
     // let exitCode = emitResult.emitSkipped ? 1 : 0;
     // console.log(`Process exiting with code '${exitCode}'.`);
-
+    // console.log(allDiagnostics)
     // process.exit(exitCode);
     return {
       // rawResult: rawResult.join('\n'),
       prettyResult: prettyResult,
-      success: !emitResult.emitSkipped,
+      success: !allDiagnostics.length,
     };
   }
 
