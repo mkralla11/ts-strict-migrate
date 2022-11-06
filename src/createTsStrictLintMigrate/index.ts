@@ -131,6 +131,7 @@ export function createTsStrictLintMigrate({
     }
 
     allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file) && !/^node_modules\/.+$/.test(file));
+    repoPath = repoPath[repoPath.length -1] === '/' ? repoPath.slice(0, -1) : repoPath
     let files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
 
     if(excludeFiles && excludeFiles.length > 0){
