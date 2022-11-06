@@ -26,7 +26,7 @@ import {
   handleUnwatch,
   handleWatch
 } from '../createWatcher'
-
+import path from 'path'
 
 export interface RunTsStrictLintMigrateResult {
   lintResults?: LintResult,
@@ -132,7 +132,7 @@ export function createTsStrictLintMigrate({
 
     allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file) && !/^node_modules\/.+$/.test(file));
     repoPath = repoPath[repoPath.length -1] === '/' ? repoPath.slice(0, -1) : repoPath
-    let files = allNewFiles.map((filename) => `${repoPath}/${filename}`);
+    let files = allNewFiles.map((filename) => path.join(repoPath, filename));
 
     if(excludeFiles && excludeFiles.length > 0){
       const excludeFilesObject = excludeFiles.reduce((accumulator: {[key: string]: boolean}, key)=>{
