@@ -46,7 +46,7 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
     jsx: 4,
     target: ts.ScriptTarget.ES2015,
     module: ts.ModuleKind.CommonJS,
-    allowJs: false,
+    allowJs: true,
     exclude: ['node_modules'],
   };
 
