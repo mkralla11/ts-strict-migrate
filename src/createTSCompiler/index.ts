@@ -40,6 +40,7 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
     forceConsistentCasingInFileNames: true,
     noImplicitOverride: true,
     noEmitOnError: true,
+    noEmit: true,
     esModuleInterop: true,
     skipLibCheck: true,
     jsx: 4,
