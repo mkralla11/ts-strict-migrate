@@ -1,6 +1,6 @@
 {
   "name": "ts-strict-lint-migrate",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Incrementally enforce typescript strict mode and lint selectively for new files (staged, and commited after date)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -139,7 +139,7 @@ export function createTsStrictLintMigrate({
         accumulator[key] = true
         return accumulator
       }, {})
-      files = files.filter((file)=>excludeFilesObject[file])
+      files = files.filter((file)=>!excludeFilesObject[file])
     }
 
     const tsProgram = tsCompiler.createProgram(files);
