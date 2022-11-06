@@ -118,9 +118,14 @@ export function createTsStrictLintMigrate({
       ...newFilesAfterDate,
       ...(extraFiles || [])
     ]
-
+    console.log('running again')
     allNewFiles = [...new Set(allNewFiles)]
 
+    if(!allNewFiles.length){
+      return {
+        success: true,
+      };
+    }
 
     const success = logErrorsForProhibitedFileExtensions(allNewFiles);
 
@@ -153,10 +158,10 @@ export function createTsStrictLintMigrate({
     };
 
     // console.log('linting', files)
-
-    handleUnwatch({ files, watchEnabled: !!watchIncludedFiles, watcher });
+    const repoPathAsArray = [repoPath]
+    handleUnwatch({ files: repoPathAsArray, watchEnabled: !!watchIncludedFiles, watcher });
     const lintResults = await lint(files, composedEsLintCompilerOptions);
-    handleWatch({ files, watchEnabled: !!watchIncludedFiles, watcher });
+    handleWatch({ files: repoPathAsArray, watchEnabled: !!watchIncludedFiles, watcher });
 
     const lintSuccess = !lintResults?.lintResult?.find(
       ({ errorCount }: {errorCount: number}) => errorCount > 0,
@@ -182,8 +187,15 @@ export function createTsStrictLintMigrate({
     return results;
   }
 
-  const runDebounced = debounce(run, 100);
+  
 
+  const runDebounced = debounce(run, 5);
+
+  function runCheckDebounced(event: string, path: string){
+    console.log('here', event, path)
+    runDebounced()
+  }
+  
   async function stop(): Promise<void> {
     await watcher.close();
   }
@@ -191,8 +203,8 @@ export function createTsStrictLintMigrate({
   if (watchIncludedFiles) {
     watcher = createWatcher();
     watcher.init();
-    watcher.on('add', runDebounced);
-    watcher.on('change', runDebounced);
+    watcher.on('all', runCheckDebounced);
+    // watcher.on('change', runDebounced);
   }
 
   return {

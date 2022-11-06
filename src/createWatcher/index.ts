@@ -20,6 +20,7 @@ export function handleWatch({ files, watchEnabled, watcher }: HandleWatchArgumen
 type watchUnwatchFunction = (files: string[])=>void
 
 interface EventMap {
+  all: (event:string, path: string)=>void;
   add: (path: string) => void;
   change: (path: string) => void;
   unlink: (path: string) => void;
@@ -61,6 +62,7 @@ export function createWatcher(): Watcher {
     // we need to make sure we hang, so just watch this file
     internalWatcher = watch(["{__dirname}/index.js"], {
       ignored: /(^|[/\\])\../, // ignore dotfiles
+      ignoreInitial: true,
       persistent: true,
       followSymlinks: true,
     });
@@ -69,15 +71,16 @@ export function createWatcher(): Watcher {
     // const log = console.log.bind(console);
     // Add event listeners.
     internalWatcher
-      .on('change', (path: string) => {
+      .on('all', (event: keyof EventMap, path: string) => {
         // console.log('changed', path)
-        eventEmitter.emit('change', path);
-      });
-    // .on('add', (path: string )=> {
-    //   debugger
-    //   log(`File ${path} has been added`)
-    //   eventEmitter.emit('add', path)
-    // })
+        eventEmitter.emit('all', event, path);
+        eventEmitter.emit(event, path);
+      })
+      // .on('add', (path: string )=> {
+      //   debugger
+      //   log(`File ${path} has been added`)
+      //   eventEmitter.emit('add', path)
+      // })
     // .on('unlink', (path: string ) => log(`File ${path} has been removed`));
     // // More possible events.
     // internalWatcher

@@ -82,7 +82,7 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
   }
 
   function compile(): CompileResult {
-    const emitResult = builderProgram.emit();
+    // const emitResult = builderProgram.emit();
     if(!builderProgram){
       throw new Error('compile called before createProgram')
     }
