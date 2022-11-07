@@ -46,7 +46,7 @@ export interface CreateTsStrictLintMigrateOptions {
   includeAllCurrentBranchCommitedFilesNotInMaster?: boolean,
   watchIncludedFiles?: boolean,
   ignoreFilesFromWatch?: RegExp,
-  watchFiles: string[],
+  watchFiles?: string[],
   leakDate?: string,
   excludeFiles?: string[],
   tsCompilerOpts?: PermittedTSCompilerOptions,
