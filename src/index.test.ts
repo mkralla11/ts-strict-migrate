@@ -95,7 +95,6 @@ describe('runTsStrictMigrate', () => {
     // await gitAddAllTestFiles();
     const secondTimeStamp = Object.keys(committedTimestampsToFiles)[1];
     const tsStrictLintMigrate = createTsStrictLintMigrate({
-      watchFiles: [`${__dirname}/gitTestData/**/*`],
       repoPath: `${__dirname}/gitTestData`,
       includeStagedFiles: true,
       includeAllCurrentBranchCommitedFilesNotInMaster: true,
@@ -147,7 +146,7 @@ describe('runTsStrictMigrate', () => {
     let count = 0
 
     const opts = {
-      watchFiles: [`${__dirname}/gitTestData/**/*`],
+      watchFiles: [`${__dirname}/gitTestData`],
       repoPath: `${__dirname}/gitTestData`,
       includeAllCurrentBranchCommitedFilesNotInMaster: true,
       includeStagedFiles: true,
