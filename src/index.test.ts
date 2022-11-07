@@ -180,9 +180,11 @@ describe('runTsStrictMigrate', () => {
       onResults: (res: RunTsStrictLintMigrateResultOrProm)=>{
         count = count + 1
         if(count === 1){
+          console.log('first resolve')
           exposedPromise.resolve(res)
         }
         else if(count === 2){
+          console.log('second resolve')
           exposedPromise1.resolve(res)
         }
       }
@@ -208,7 +210,7 @@ describe('runTsStrictMigrate', () => {
       console.log('new stuff')
 
     `  
-
+    console.log('write to file')
     await writeFile(tsTestFile4, newData);
     
     const res1: RunTsStrictLintMigrateResult = await exposedPromise1.promise
