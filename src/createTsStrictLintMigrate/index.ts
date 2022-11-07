@@ -193,7 +193,7 @@ export function createTsStrictLintMigrate({
 
   
 
-  const runDebounced = debounce(run, 5);
+  const runDebounced = debounce(run, 20);
 
   // function runCheckDebounced(event: string, path: string){
   //   console.log('here', event, path)
