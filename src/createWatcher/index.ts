@@ -2,7 +2,7 @@ import { FSWatcher, watch } from 'chokidar';
 import { EventEmitter } from 'node:events';
 
 interface HandleWatchArguments {
-  files: string[]
+  files?: string[]
   watchEnabled: boolean
   watcher: Watcher
 }
@@ -10,11 +10,11 @@ interface HandleWatchArguments {
 type HandleUnwatchArguments = HandleWatchArguments
 
 export function handleUnwatch({ files, watchEnabled, watcher }: HandleUnwatchArguments): void {
-  watchEnabled && watcher.unwatchFiles(files);
+  watchEnabled && files && watcher.unwatchFiles(files);
 }
 
 export function handleWatch({ files, watchEnabled, watcher }: HandleWatchArguments): void {
-  watchEnabled && watcher.watchFiles(files);
+  watchEnabled && files && watcher.watchFiles(files);
 }
 
 type watchUnwatchFunction = (files: string[])=>void
