@@ -58,8 +58,7 @@ export async function getUnstagedAndStagedChangedFilesAfterDate(
 
   // Modified Staged, Modified Unstaged
   const changedFiles = [
-    ...status.modified,
-    ...status.staged
+    ...status.modified
   ]
 
   const changedFilesMap = new Map<string, string>();
