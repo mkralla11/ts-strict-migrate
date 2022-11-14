@@ -92,7 +92,7 @@ async function run(): Promise<void> {
     watchIncludedFiles: !process.env.CI,
 
     // Any Typescript compiler options
-    tsCompilerOpts: {
+    tsConfig: {
       // helpful to set baseUrl to
       // adjust ts import paths
       baseUrl: `${__dirname}/../src`,
@@ -102,7 +102,7 @@ async function run(): Promise<void> {
     },
 
     // Any eslint configuration
-    esLintCompilerOpts: {
+    esLintConfig: {
       settings: {
         // react version is required as it should not be inferred
           "react": {

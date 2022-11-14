@@ -64,7 +64,7 @@ export function createWatcher({ignoreFilesFromWatch}: WatcherOptions): Watcher {
 
   function init() {
     // we need to make sure we hang, so just watch this file
-    internalWatcher = watch(["{__dirname}/index.js"], {
+    internalWatcher = watch([], {
       ignored: ignoreFilesFromWatch,
       ignoreInitial: true,
       persistent: true,

@@ -2,12 +2,12 @@ import { simpleGit, SimpleGit } from 'simple-git';
 import { 
   createTSCompiler, 
   CompileResult, 
-  PermittedTSCompilerOptions 
+  TsConfig 
 } from '../createTSCompiler';
 import { 
   lint, 
   LintResult, 
-  PermittedEsLintCompilerOptions as PermittedEsLintCompilerOptions 
+  EsLintConfig as EsLintConfig 
 } from '../linter';
 import {
   getStagedNewFiles,
@@ -17,8 +17,14 @@ import {
 } from '../gitHelpers'
 import {
   debounce,
-  logErrorsForProhibitedFileExtensions
+  getErrorsForProhibitedFileExtensions,
+  GetErrorsForProhibitedFileExtensionsResult
 } from '../utilities'
+
+import {
+  ESLint
+} from 'eslint'
+
 
 import {
   createWatcher,
@@ -28,7 +34,10 @@ import {
 } from '../createWatcher'
 import path from 'node:path'
 
+type RawLintResult = ESLint.LintResult
+
 export interface RunTsStrictLintMigrateResult {
+  prohibitedFilesResults?: GetErrorsForProhibitedFileExtensionsResult,
   lintResults?: LintResult,
   tsResults?: CompileResult,
   strictFiles?: string[],
@@ -49,8 +58,8 @@ export interface CreateTsStrictLintMigrateOptions {
   watchFiles?: string[],
   leakDate?: string,
   excludeFiles?: string[],
-  tsCompilerOpts?: PermittedTSCompilerOptions,
-  esLintCompilerOpts?: PermittedEsLintCompilerOptions,
+  tsConfig?: TsConfig,
+  esLintConfig?: EsLintConfig,
   onResults?: (results: RunTsStrictLintMigrateResult)=>void
 }
 
@@ -71,12 +80,13 @@ export function createTsStrictLintMigrate({
   ignoreFilesFromWatch,
   leakDate,
   excludeFiles,
-  tsCompilerOpts: tsCompilerOptions = {},
-  esLintCompilerOpts: esLintCompilerOptions = {},
+  tsConfig: tsCompilerOptions = {},
+  esLintConfig: esLintCompilerOptions = {},
   onResults,
 }: CreateTsStrictLintMigrateOptions): TsStrictLintMigrate {
   let watcher: Watcher = createWatcher({ignoreFilesFromWatch});
   const tsCompiler = createTSCompiler(tsCompilerOptions);
+  let rawLintResults: RawLintResult[];
 
   async function run(): Promise<RunTsStrictLintMigrateResult> {
     const git: SimpleGit = simpleGit(repoPath, { binary: 'git' });
@@ -131,11 +141,12 @@ export function createTsStrictLintMigrate({
       };
     }
 
-    const success = logErrorsForProhibitedFileExtensions(allNewFiles);
+    const prohibitedFilesResults = getErrorsForProhibitedFileExtensions(allNewFiles);
 
-    if (!success) {
+    if (!prohibitedFilesResults.success) {
       return {
         success: false,
+        prohibitedFilesResults
       };
     }
 
@@ -163,15 +174,14 @@ export function createTsStrictLintMigrate({
 
     // console.log('linting', files)
     const repoPathAsArray = watchFiles
-    handleUnwatch({ files: repoPathAsArray, watchEnabled: !!watchIncludedFiles, watcher });
+
     const lintResults = await lint(files, composedEsLintCompilerOptions);
-    handleWatch({ files: repoPathAsArray, watchEnabled: !!watchIncludedFiles, watcher });
 
     const lintSuccess = !lintResults?.lintResult?.find(
       ({ errorCount }: {errorCount: number}) => errorCount > 0,
     );
 
-    const tsResults = tsCompiler.compile(files);
+    const tsResults = tsCompiler.compile();
 
     const { success: tsSuccess } = tsResults;
 
@@ -192,23 +202,24 @@ export function createTsStrictLintMigrate({
   }
 
   
+  const runDebounced = debounce(run, 10);
 
-  const runDebounced = debounce(run, 20);
 
   // function runCheckDebounced(event: string, path: string){
-  //   console.log('here', event, path)
   //   runDebounced()
   // }
+
+
   
   async function stop(): Promise<void> {
     await watcher.close();
   }
 
-  if (watchIncludedFiles) {
+  if (watchIncludedFiles && watchFiles && watchFiles.length) {
     watcher = createWatcher({ignoreFilesFromWatch});
     watcher.init();
+    handleWatch({ files: watchFiles, watchEnabled: !!watchIncludedFiles, watcher });
     watcher.on('all', runDebounced);
-    // watcher.on('change', runDebounced);
   }
 
   return {

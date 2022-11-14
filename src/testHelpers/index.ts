@@ -101,10 +101,13 @@ import {example3} from 'root/example3'
 import {example1} from 'root/example1'
 import {unused} from 'root/example2'
 
+class Unicorn {
+}
+
 export function MyComponent({text}) {
   const [otherText, setOtherText] = useState("wow")
   const supposedlyVoid: string = unused()
-
+  console.log(Unicorn)
   useEffect(()=>{
     if (true) {
       setOtherText(!otherText)

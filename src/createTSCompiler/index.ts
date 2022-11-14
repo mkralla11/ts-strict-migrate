@@ -1,17 +1,19 @@
 import * as ts from 'typescript';
 
-export type PermittedTSCompilerOptions = Pick<
-  ts.CompilerOptions,
-  'jsx' |
-  'target' |
-  'module' |
-  'lib' |
-  'moduleResolution' |
-  'paths' |
-  'resolveJsonModule' |
-  'skipLibCheck' |
-  'baseUrl'
-  >
+// export type TsConfig = Pick<
+//   ts.CompilerOptions,
+//   'jsx' |
+//   'target' |
+//   'module' |
+//   'lib' |
+//   'moduleResolution' |
+//   'paths' |
+//   'resolveJsonModule' |
+//   'skipLibCheck' |
+//   'baseUrl'
+//   >
+
+export type TsConfig = ts.CompilerOptions
 
 // interface IcreatedFiles {
 //   [key: string]: string
@@ -24,12 +26,12 @@ export interface CompileResult {
 }
 
 interface TSCompiler {
-  compile: (fileNames: string[])=>CompileResult
+  compile: ()=>CompileResult
   getConfig: ()=>ts.CompilerOptions
   createProgram: (fileNames: string[])=>ts.Program
 }
 
-export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompiler {
+export function createTSCompiler(options: TsConfig): TSCompiler {
   const forceCompilerOptions = {
     strict: true,
     noImplicitAny: true,
@@ -46,8 +48,9 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
     jsx: 4,
     target: ts.ScriptTarget.ES2015,
     module: ts.ModuleKind.CommonJS,
+    moduleResolution: ts.ModuleResolutionKind.NodeJs,
     allowJs: true,
-    exclude: ['node_modules'],
+    // exclude: ['node_modules'],
   };
 
   const composedOptions: ts.CompilerOptions = { ...forceCompilerOptions, ...options };
@@ -67,7 +70,7 @@ export function createTSCompiler(options: PermittedTSCompilerOptions): TSCompile
   function createProgram(fileNames: string[]): ts.Program {
     fileNamesMap = new Map()
     for (const fileName of fileNames) {fileNamesMap.set(fileName, fileName)}
-    
+      
     builderProgram = ts.createSemanticDiagnosticsBuilderProgram(
       fileNames,
       composedOptions,

@@ -11,6 +11,10 @@ import {
   getFilesInCommitsNotOnMasterFor
 } from './gitHelpers';
 
+import {
+  EsLintConfig
+} from './linter'
+
 
 import {
   ensureTestGitRepoExists,
@@ -33,7 +37,65 @@ import {
   ensureFile
 } from 'fs-extra';
 
+
 export type RunTsStrictLintMigrateResultOrProm = RunTsStrictLintMigrateResult | PromiseLike<RunTsStrictLintMigrateResult>
+
+const testTsConfig = {
+  // include: [`../../node_modules/**/*`],
+  baseUrl: `${__dirname}/gitTestData`,
+  paths: {
+    "root/*": ["*"],
+  }
+}
+
+
+
+const testEslintConfig: EsLintConfig = {
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/all',
+    'plugin:react-hooks/recommended',
+    'plugin:react-native/all',
+    'plugin:eslint-comments/recommended',
+    // 'plugin:unicorn/recommended',
+    // 'plugin:import/recommended',
+    // 'prettier',
+  ],
+  parser: '@typescript-eslint/parser',
+  plugins: [
+    '@typescript-eslint',
+  ],
+  rules: {
+    'eslint-comments/no-use': ['error', { allow: [] }],
+    '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/explicit-module-boundary-types': 'error',
+    'no-unused-vars': 'off',
+    'react/jsx-no-undef': 'off',
+    'react/jsx-filename-extension': ['error', { extensions: ['.tsx'] }],
+    // already handled by eslint-comments/no-use
+    // 'unicorn/no-abusive-eslint-disable': 'off',
+    // 'import/no-cycle': 'error',
+    'react-hooks/exhaustive-deps': 'error',
+    // '@typescript-eslint/semi': 'off'
+  },
+  settings: {
+    "react": {
+      "version": "16.6.3"
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx", ".js", ".jsx"],
+      // "node": [".js", "jsx"]
+    },
+    "import/resolver": {
+      "eslint-import-resolver-custom-alias": {
+        "extensions": [".ts", ".tsx", ".js", ".jsx"],
+        "alias": {
+          "root": `${__dirname}/gitTestData`
+        }
+      }
+    }
+  }
+}
 
 
 describe('runTsStrictMigrate', () => {
@@ -100,31 +162,8 @@ describe('runTsStrictMigrate', () => {
       includeAllCurrentBranchCommitedFilesNotInMaster: true,
       includeCurrentBranchCommitedFiles: true,
       leakDate: secondTimeStamp,
-      tsCompilerOpts: {
-        baseUrl: `${__dirname}/gitTestData`,
-        paths: {
-          "root/*": ["*"],
-        }
-      },
-      esLintCompilerOpts: {
-        settings: {
-          "react": {
-            "version": "16.6.3"
-          },
-          "import/parsers": {
-            "@typescript-eslint/parser": [".ts", ".tsx"],
-            "node": [".js", "jsx"]
-          },
-          "import/resolver": {
-            "eslint-import-resolver-custom-alias": {
-              "extensions": [".ts", ".tsx"],
-              "alias": {
-                "root": `${__dirname}/gitTestData`
-              }
-            }
-          }
-        }
-      }
+      tsConfig: testTsConfig,
+      esLintConfig: testEslintConfig
     });
 
     const res = await tsStrictLintMigrate.run()
@@ -135,7 +174,7 @@ describe('runTsStrictMigrate', () => {
     expect(res.tsSuccess).toEqual(false);
     expect(res?.lintResults?.lintResult?.length).toEqual(2)
     expect(res?.lintResults?.lintResult?.[0]?.errorCount).toEqual(3);
-    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(12);
+    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(7);
   });
 
 
@@ -152,39 +191,14 @@ describe('runTsStrictMigrate', () => {
       includeStagedFiles: true,
       includeUnstagedFiles: true,
       watchIncludedFiles: true,
-      tsCompilerOpts: {
-        baseUrl: `${__dirname}/gitTestData`,
-        paths: {
-          "root/*": ["*"],
-        }
-      },
-      esLintCompilerOpts: {
-        settings: {
-          "react": {
-            "version": "16.6.3"
-          },
-          "import/parsers": {
-            "@typescript-eslint/parser": [".ts", ".tsx"],
-            "node": [".js", "jsx"]
-          },
-          "import/resolver": {
-            "eslint-import-resolver-custom-alias": {
-              "extensions": [".ts", ".tsx"],
-              "alias": {
-                "root": `${__dirname}/gitTestData`
-              }
-            }
-          }
-        }
-      },
+      tsConfig: testTsConfig,
+      esLintConfig: testEslintConfig,
       onResults: (res: RunTsStrictLintMigrateResultOrProm)=>{
         count = count + 1
         if(count === 1){
-          console.log('first resolve')
           exposedPromise.resolve(res)
         }
         else if(count === 2){
-          console.log('second resolve')
           exposedPromise1.resolve(res)
         }
       }
@@ -197,19 +211,20 @@ describe('runTsStrictMigrate', () => {
     const res: RunTsStrictLintMigrateResult = await exposedPromise.promise
 
     // console.log(res?.tsResults?.prettyResult);
-    // console.log(res?.lintResults?.prettyResult);
+    console.log(res?.lintResults?.prettyResult);
     expect(res.success).toEqual(false);
     expect(res.lintSuccess).toEqual(false);
     expect(res.tsSuccess).toEqual(false);
     expect(res?.lintResults?.lintResult?.length).toEqual(2)
     expect(res?.lintResults?.lintResult?.[0]?.errorCount).toEqual(3);
-    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(12);
+    expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(7);
 
     const newData = `
 
       console.log('new stuff')
 
     `  
+    // await delay(1000)
     console.log('write to file')
     await writeFile(tsTestFile4, newData);
     
