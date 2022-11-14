@@ -29,7 +29,7 @@ import {
 import {
   createWatcher,
   Watcher,
-  handleUnwatch,
+  // handleUnwatch,
   handleWatch
 } from '../createWatcher'
 import path from 'node:path'
@@ -86,7 +86,6 @@ export function createTsStrictLintMigrate({
 }: CreateTsStrictLintMigrateOptions): TsStrictLintMigrate {
   let watcher: Watcher = createWatcher({ignoreFilesFromWatch});
   const tsCompiler = createTSCompiler(tsCompilerOptions);
-  let rawLintResults: RawLintResult[];
 
   async function run(): Promise<RunTsStrictLintMigrateResult> {
     const git: SimpleGit = simpleGit(repoPath, { binary: 'git' });
@@ -173,7 +172,6 @@ export function createTsStrictLintMigrate({
     };
 
     // console.log('linting', files)
-    const repoPathAsArray = watchFiles
 
     const lintResults = await lint(files, composedEsLintCompilerOptions);
 

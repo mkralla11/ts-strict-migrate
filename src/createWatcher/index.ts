@@ -9,9 +9,9 @@ interface HandleWatchArguments {
 
 type HandleUnwatchArguments = HandleWatchArguments
 
-export function handleUnwatch({ files, watchEnabled, watcher }: HandleUnwatchArguments): void {
-  watchEnabled && files && watcher.unwatchFiles(files);
-}
+// export function handleUnwatch({ files, watchEnabled, watcher }: HandleUnwatchArguments): void {
+//   watchEnabled && files && watcher.unwatchFiles(files);
+// }
 
 export function handleWatch({ files, watchEnabled, watcher }: HandleWatchArguments): void {
   watchEnabled && files && watcher.watchFiles(files);
