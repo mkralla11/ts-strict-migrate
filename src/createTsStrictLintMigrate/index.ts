@@ -215,7 +215,7 @@ export function createTsStrictLintMigrate({
     await watcher.close();
   }
 
-  if (watchIncludedFiles && watchFiles && watchFiles.length) {
+  if (watchIncludedFiles && watchFiles && watchFiles.length > 0) {
     watcher = createWatcher({ignoreFilesFromWatch});
     watcher.init();
     handleWatch({ files: watchFiles, watchEnabled: !!watchIncludedFiles, watcher });
