@@ -21,10 +21,6 @@ import {
   GetErrorsForProhibitedFileExtensionsResult
 } from '../utilities'
 
-import {
-  ESLint
-} from 'eslint'
-
 
 import {
   createWatcher,
@@ -34,7 +30,6 @@ import {
 } from '../createWatcher'
 import path from 'node:path'
 
-type RawLintResult = ESLint.LintResult
 
 export interface RunTsStrictLintMigrateResult {
   prohibitedFilesResults?: GetErrorsForProhibitedFileExtensionsResult,
