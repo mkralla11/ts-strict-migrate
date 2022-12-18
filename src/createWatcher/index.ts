@@ -106,7 +106,7 @@ export function createWatcher({ignoreFilesFromWatch}: WatcherOptions): Watcher {
 
   const watchFiles: watchUnwatchFunction = (files) => {
     if (internalWatcher) {
-      console.log("adding watch files",files)
+      // console.log("adding watch files",files)
       internalWatcher.add(files);
     }
   };
