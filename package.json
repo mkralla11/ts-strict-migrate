@@ -42,14 +42,9 @@
     "ts-jest": "^29.0.2",
     "ts-node": "^10.9.1",
     "type-fest": "^3.0.0",
-    "typescript": "^4.8.4"
-  },
-  "dependencies": {
-    "@types/jest": "^29.0.3",
+    "typescript": "^4.8.4",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
-    "chokidar": "^3.5.3",
-    "eslint": "^8.24.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-config-prettier": "^8.5.0",
@@ -59,7 +54,12 @@
     "eslint-plugin-react": "^7.31.8",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-native": "^4.0.0",
-    "eslint-plugin-unicorn": "^44.0.0",
+    "eslint-plugin-unicorn": "^44.0.0"
+  },
+  "dependencies": {
+    "@types/jest": "^29.0.3",
+    "chokidar": "^3.5.3",
+    "eslint": "^8.24.0",
     "node-gyp": "^9.1.0",
     "simple-git": "^3.14.1"
   }
