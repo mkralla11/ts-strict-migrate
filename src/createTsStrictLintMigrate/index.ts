@@ -138,10 +138,12 @@ export function createTsStrictLintMigrate({
     const prohibitedFilesResults = getErrorsForProhibitedFileExtensions(allNewFiles);
 
     if (!prohibitedFilesResults.success) {
-      return {
+      const results = {
         success: false,
         prohibitedFilesResults
-      };
+      }
+      onResults && onResults(results);
+      return results
     }
 
     allNewFiles = allNewFiles.filter((file) => /^.+\.(ts|tsx|cts|mts)$/.test(file) && !/^node_modules\/.+$/.test(file));

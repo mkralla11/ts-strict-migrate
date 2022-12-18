@@ -56,6 +56,7 @@ export const tsTestFilename4 = 'nested/example4.tsx';
 
 export const tsTestFile3 = `${testGitDirectory}/${tsTestFilename3}`;
 export const tsTestFile4 = `${testGitDirectory}/${tsTestFilename4}`;
+export const jsTestFile5 = `${testGitDirectory}/example5.js`;
 
 const testBranchName = 'testbranch';
 

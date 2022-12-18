@@ -27,6 +27,7 @@ import {
   tsTestFilename3,
   tsTestFilename4,
   tsTestFile4,
+  jsTestFile5,
   tsTestFile2,
   testGitDirectory,
   delay,
@@ -153,7 +154,7 @@ describe('runTsStrictMigrate', () => {
     // debugger
   });
 
-  it('should execute runTsStrictMigrate on all staged and new committed files after date', async () => {
+  it('should execute runTsStrictMigrate and short circuit with error when JS file is added', async () => {
     // await gitAddAllTestFiles();
     const secondTimeStamp = Object.keys(committedTimestampsToFiles)[1];
     const tsStrictLintMigrate = createTsStrictLintMigrate({
@@ -175,6 +176,38 @@ describe('runTsStrictMigrate', () => {
     expect(res?.lintResults?.lintResult?.length).toEqual(2)
     expect(res?.lintResults?.lintResult?.[0]?.errorCount).toEqual(3);
     expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(7);
+  });
+
+
+
+  fit('should execute runTsStrictMigrate on all staged and new committed files after date', async () => {
+    // await gitAddAllTestFiles();
+    const secondTimeStamp = Object.keys(committedTimestampsToFiles)[1];
+    const tsStrictLintMigrate = createTsStrictLintMigrate({
+      repoPath: `${__dirname}/gitTestData`,
+      includeUnstagedFiles: true,
+      leakDate: secondTimeStamp,
+      tsConfig: testTsConfig,
+      esLintConfig: testEslintConfig
+    });
+
+    const newData = `
+
+      console.log('this is a js file')
+
+    `  
+    await writeFile(jsTestFile5, newData);
+
+    const res = await tsStrictLintMigrate.run()
+
+
+    // console.log(res?.lintResults?.prettyResult);
+    expect(res.success).toEqual(false);
+    // expect(res.prohibitedFilesResults).toEqual(false);
+    // expect(res.tsSuccess).toEqual(false);
+    expect(res?.prohibitedFilesResults?.results?.length).toEqual(1)
+    // expect(res?.lintResults?.lintResult?.[0]?.errorCount).toEqual(3);
+    // expect(res?.lintResults?.lintResult?.[1]?.errorCount).toEqual(7);
   });
 
 
