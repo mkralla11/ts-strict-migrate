@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/mkralla11/ts-strict-migrate#readme",
   "devDependencies": {
-    "@types/eslint": "^8.4.6",
+    "@types/eslint": "^9.6.0",
     "@types/fs-extra": "^11.0.1",
     "@types/react": "^18.0.21",
     "@types/react-native": "^0.73.0",
@@ -59,7 +59,7 @@
   "dependencies": {
     "@types/jest": "^29.0.3",
     "chokidar": "^3.5.3",
-    "eslint": "^8.24.0",
+    "eslint": "^9.8.0",
     "node-gyp": "^9.1.0",
     "simple-git": "^3.14.1"
   }
